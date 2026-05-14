@@ -255,3 +255,19 @@
         transform: rotate(360deg);
     }
 }
+
+/* Тёмная тема: контраст блоков каталога с жёсткими светлыми цветами */
+html[data-theme="dark"] .stat-card {
+    background: #0f172a;
+    border-color: #334155;
+    color: #e2e8f0;
+}
+
+html[data-theme="dark"] .map-container {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-color: #3b82f6;
+}
+
+html[data-theme="dark"] .map-placeholder {
+    color: #94a3b8;
+}

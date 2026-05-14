@@ -17,6 +17,7 @@ function initThemeToggle() {
 
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-bs-theme', theme === 'dark' ? 'dark' : 'light');
         try {
             localStorage.setItem('gc-theme', theme);
         } catch (e) {
