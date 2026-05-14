@@ -6,6 +6,7 @@ using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Data;
+using System.Globalization;
 using Npgsql;
 using System.Text;
 
@@ -116,10 +117,19 @@ namespace GeographicCatalog.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetFilteredData([FromQuery] SearchModel model)
+        public IActionResult GetFilteredData(
+            [FromQuery, Bind(Prefix = "")] SearchModel model,
+            int? regionId = null,
+            int? districtId = null)
         {
             if (model == null) model = new SearchModel();
             model.PageSize = _pageSize;
+            MergeGeoFiltersFromRequestQuery(model, Request);
+            if (regionId.HasValue && regionId.Value > 0)
+                model.RegionId = regionId.Value;
+            if (districtId.HasValue && districtId.Value > 0)
+                model.DistrictId = districtId.Value;
+
             SearchObjects(model);
             return PartialView("_SearchResultsPartial", model);
         }
@@ -823,6 +833,83 @@ public IActionResult DetailsATE(int id)
         }
 
         /// <summary>
+        /// Как в админке: id области/района из строки (целое или «5.0» из text/cast).
+        /// </summary>
+        private static bool TryParsePositiveGeoId(string? raw, out int id)
+        {
+            id = 0;
+            if (string.IsNullOrWhiteSpace(raw)) return false;
+            raw = raw.Trim();
+            if (int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out id) && id > 0)
+                return true;
+            if (double.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out var d))
+            {
+                id = (int)Math.Truncate(d);
+                return id > 0;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Подставляет область и район из query string.
+        /// Учитывает и «плоские» ключи (RegionId), и префикс имени параметра (model.RegionId), без сброса фильтра при мусорном значении.
+        /// </summary>
+        private static void MergeGeoFiltersFromRequestQuery(SearchModel model, HttpRequest request)
+        {
+            ApplyGeoIdFromQueryWithSuffixFallback(request.Query, model, isRegion: true);
+            ApplyGeoIdFromQueryWithSuffixFallback(request.Query, model, isRegion: false);
+        }
+
+        private static void ApplyGeoIdFromQueryWithSuffixFallback(IQueryCollection query, SearchModel model, bool isRegion)
+        {
+            var keys = isRegion
+                ? new[] { "RegionId", "regionId", "region_id", "model.RegionId", "model.regionId", "criteria.RegionId", "criteria.regionId" }
+                : new[] { "DistrictId", "districtId", "district_id", "model.DistrictId", "model.districtId", "criteria.DistrictId", "criteria.districtId" };
+
+            Action<int?> assign = isRegion ? (v => model.RegionId = v) : (v => model.DistrictId = v);
+
+            foreach (var k in keys)
+            {
+                if (!query.TryGetValue(k, out var vals) || vals.Count == 0)
+                    continue;
+
+                var raw = vals[0]?.Trim() ?? "";
+                if (string.IsNullOrEmpty(raw))
+                {
+                    assign(null);
+                    return;
+                }
+
+                if (TryParsePositiveGeoId(raw, out var n))
+                {
+                    assign(n);
+                    return;
+                }
+            }
+
+            var dotSuffix = isRegion ? ".RegionId" : ".DistrictId";
+            foreach (var kv in query)
+            {
+                if (kv.Value.Count == 0) continue;
+                if (!kv.Key.EndsWith(dotSuffix, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var raw = kv.Value[0]?.Trim() ?? "";
+                if (string.IsNullOrEmpty(raw))
+                {
+                    assign(null);
+                    return;
+                }
+
+                if (TryParsePositiveGeoId(raw, out var n))
+                {
+                    assign(n);
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
         /// Отсекает невозможные годы основания (в т.ч. из подделанного query string) и несогласованные пары «с»/«по».
         /// </summary>
         private static void NormalizeCatalogFoundationYears(SearchModel? model)
@@ -1355,11 +1442,20 @@ public IActionResult DetailsATE(int id)
         }
 
         [HttpGet]
-        public IActionResult ExportToPdf([FromQuery] SearchModel model)
+        public IActionResult ExportToPdf(
+            [FromQuery, Bind(Prefix = "")] SearchModel model,
+            int? regionId = null,
+            int? districtId = null)
         {
             try
             {
                 if (model == null) model = new SearchModel();
+                MergeGeoFiltersFromRequestQuery(model, Request);
+                if (regionId.HasValue && regionId.Value > 0)
+                    model.RegionId = regionId.Value;
+                if (districtId.HasValue && districtId.Value > 0)
+                    model.DistrictId = districtId.Value;
+
                 SearchObjects(model, usePagination: false);
                 
                 string fontPath = Path.Combine(_hostingEnvironment.WebRootPath, "fonts", "tahoma.ttf");
@@ -1422,11 +1518,22 @@ public IActionResult DetailsATE(int id)
         }
 
         [HttpGet]
-        public IActionResult ExportAdminReportPdf([FromQuery] SearchModel model, string reportKind, string referenceGroup = null)
+        public IActionResult ExportAdminReportPdf(
+            [FromQuery, Bind(Prefix = "")] SearchModel model,
+            string reportKind,
+            string referenceGroup = null,
+            int? regionId = null,
+            int? districtId = null)
         {
             try
             {
                 if (model == null) model = new SearchModel();
+                MergeGeoFiltersFromRequestQuery(model, Request);
+                if (regionId.HasValue && regionId.Value > 0)
+                    model.RegionId = regionId.Value;
+                if (districtId.HasValue && districtId.Value > 0)
+                    model.DistrictId = districtId.Value;
+
                 SearchObjects(model, usePagination: false, CatalogSearchMode.AdminReport);
                 
                 string fontPath = Path.Combine(_hostingEnvironment.WebRootPath, "fonts", "tahoma.ttf");

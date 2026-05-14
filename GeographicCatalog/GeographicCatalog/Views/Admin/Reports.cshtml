@@ -69,35 +69,22 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label small text-muted">Область</label>
-                <select asp-for="RegionId" class="form-select" id="rep-region">
+                @* name=regionId — как в каталоге; надёжная привязка к int? regionId в ExportAdminReportPdf *@
+                <select asp-for="RegionId" name="regionId" class="form-select" id="rep-region">
                     <option value="">— Все —</option>
-                    @foreach (var r in regions)
+                    @foreach (var r in regions.Where(r => !string.IsNullOrEmpty(r.Value)))
                     {
-                        if (Model.RegionId?.ToString() == r.Value)
-                        {
-                            <option value="@r.Value" selected>@r.Text</option>
-                        }
-                        else
-                        {
-                            <option value="@r.Value">@r.Text</option>
-                        }
+                        <option value="@r.Value">@r.Text</option>
                     }
                 </select>
             </div>
             <div class="col-md-4">
                 <label class="form-label small text-muted">Район</label>
-                <select asp-for="DistrictId" class="form-select" id="rep-district">
+                <select asp-for="DistrictId" name="districtId" class="form-select" id="rep-district">
                     <option value="">— Все —</option>
-                    @foreach (var d in districts)
+                    @foreach (var d in districts.Where(d => !string.IsNullOrEmpty(d.Value)))
                     {
-                        if (Model.DistrictId?.ToString() == d.Value)
-                        {
-                            <option value="@d.Value" selected>@d.Text</option>
-                        }
-                        else
-                        {
-                            <option value="@d.Value">@d.Text</option>
-                        }
+                        <option value="@d.Value">@d.Text</option>
                     }
                 </select>
             </div>
@@ -167,8 +154,8 @@
     <input type="hidden" name="referenceGroup" id="refReferenceGroup" value="regions" />
     <div id="refReportParams"></div>
     <input type="hidden" name="SearchQuery" value="@(Model.SearchQuery ?? "")" />
-    <input type="hidden" name="RegionId" value="@(Model.RegionId.HasValue ? Model.RegionId.Value.ToString() : "")" />
-    <input type="hidden" name="DistrictId" value="@(Model.DistrictId.HasValue ? Model.DistrictId.Value.ToString() : "")" />
+    <input type="hidden" name="regionId" value="@(Model.RegionId.HasValue ? Model.RegionId.Value.ToString() : "")" />
+    <input type="hidden" name="districtId" value="@(Model.DistrictId.HasValue ? Model.DistrictId.Value.ToString() : "")" />
     <input type="hidden" name="CreatedFrom" value="@(Model.CreatedFrom.HasValue ? Model.CreatedFrom.Value.ToString("yyyy-MM-dd") : "")" />
     <input type="hidden" name="CreatedTo" value="@(Model.CreatedTo.HasValue ? Model.CreatedTo.Value.ToString("yyyy-MM-dd") : "")" />
     <input type="hidden" name="FoundationYearFrom" value="@(Model.FoundationYearFrom.HasValue ? Model.FoundationYearFrom.Value.ToString() : "")" />
@@ -457,7 +444,7 @@ var preselectedReportSubtypes = @Html.Raw(System.Text.Json.JsonSerializer.Serial
 
     function syncBaseHiddenFields() {
         var names = [
-            'SearchQuery', 'RegionId', 'DistrictId',
+            'SearchQuery', 'regionId', 'districtId',
             'CreatedFrom', 'CreatedTo',
             'FoundationYearFrom', 'FoundationYearTo',
             'MinPopulation', 'MaxPopulation',
