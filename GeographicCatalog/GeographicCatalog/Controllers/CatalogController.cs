@@ -732,6 +732,22 @@ public IActionResult DetailsATE(int id)
             return ReportExistenceSqlMode.ExistsOnly;
         }
 
+        /// <summary>Русские подписи класса объекта для PDF-отчётов; внутренние коды ATE/AIR/RW/FGO не меняются.</summary>
+        private static string ObjectTypeDisplayForReport(string? objectType)
+        {
+            if (string.IsNullOrWhiteSpace(objectType))
+                return "—";
+            var key = objectType.Trim();
+            return key.ToUpperInvariant() switch
+            {
+                "ATE" => "Административно-территориальные единицы / населённые пункты",
+                "AIR" => "Аэропорты",
+                "RW" => "Железнодорожные объекты",
+                "FGO" => "Физико-географические объекты",
+                _ => key
+            };
+        }
+
         private static Dictionary<string, List<string>> ParseReportSubtypeTags(IEnumerable<string> tags)
         {
             var d = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
@@ -1192,7 +1208,7 @@ public IActionResult DetailsATE(int id)
                         string coords = (item.Latitude.HasValue && item.Longitude.HasValue)
                             ? $"{item.Latitude:F5}, {item.Longitude:F5}"
                             : "-";
-                        table.AddCell(new Phrase(item.ObjectType, cellFont));
+                        table.AddCell(new Phrase(ObjectTypeDisplayForReport(item.ObjectType), cellFont));
                         table.AddCell(new Phrase(item.NameRu, cellFont));
                         table.AddCell(new Phrase(item.RegionName ?? "-", cellFont));
                         table.AddCell(new Phrase(item.DistrictName ?? "-", cellFont));
@@ -1305,7 +1321,7 @@ public IActionResult DetailsATE(int id)
                     
                     foreach (var item in model.Results)
                     {
-                        table.AddCell(new Phrase(item.ObjectType, cellFont));
+                        table.AddCell(new Phrase(ObjectTypeDisplayForReport(item.ObjectType), cellFont));
                         table.AddCell(new Phrase(item.NameRu, cellFont));
                         table.AddCell(new Phrase(item.RegionName ?? "Н/Д", cellFont));
                         table.AddCell(new Phrase(item.DistrictName ?? "Н/Д", cellFont));
@@ -1388,7 +1404,7 @@ public IActionResult DetailsATE(int id)
                         }
                         foreach (var item in model.Results)
                         {
-                            table.AddCell(new Phrase(item.ObjectType, cellFont));
+                            table.AddCell(new Phrase(ObjectTypeDisplayForReport(item.ObjectType), cellFont));
                             table.AddCell(new Phrase(item.TypeName ?? "—", cellFont));
                             table.AddCell(new Phrase(item.NameRu ?? "-", cellFont));
                             table.AddCell(new Phrase(item.RegionName ?? "Н/Д", cellFont));
@@ -1420,7 +1436,7 @@ public IActionResult DetailsATE(int id)
                         }
                         foreach (var r in rows)
                         {
-                            table.AddCell(new Phrase(r.Type, cellFont));
+                            table.AddCell(new Phrase(ObjectTypeDisplayForReport(r.Type), cellFont));
                             table.AddCell(new Phrase(r.Count.ToString(), cellFont));
                         }
                         document.Add(table);
@@ -1481,7 +1497,10 @@ public IActionResult DetailsATE(int id)
                             table.AddCell(cell);
                             foreach (var g in groups)
                             {
-                                table.AddCell(new Phrase(g, cellFont));
+                                var label = string.Equals(referenceGroup, "types", StringComparison.OrdinalIgnoreCase)
+                                    ? ObjectTypeDisplayForReport(g)
+                                    : g;
+                                table.AddCell(new Phrase(label, cellFont));
                             }
                         }
                         else
@@ -1498,7 +1517,10 @@ public IActionResult DetailsATE(int id)
                             foreach (var g in groups)
                             {
                                 var cnt = model.Results.Count(x => selector(x) == g);
-                                table.AddCell(new Phrase(g, cellFont));
+                                var label = string.Equals(referenceGroup, "types", StringComparison.OrdinalIgnoreCase)
+                                    ? ObjectTypeDisplayForReport(g)
+                                    : g;
+                                table.AddCell(new Phrase(label, cellFont));
                                 table.AddCell(new Phrase(cnt.ToString(), cellFont));
                             }
                         }
