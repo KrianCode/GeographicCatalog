@@ -263,6 +263,23 @@
                 box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
             }
 
+        .form-control-custom.is-invalid {
+            border-color: #f87171;
+            box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.2);
+        }
+
+        .filter-field-error {
+            display: none;
+            margin-top: 0.35rem;
+            font-size: 0.75rem;
+            line-height: 1.35;
+            color: #f87171;
+        }
+
+        .filter-field-error.is-visible {
+            display: block;
+        }
+
         /* --- Results Table --- */
         .table-container {
             overflow-x: auto;
@@ -560,9 +577,19 @@
                                     }
                                 </select>
                             </div>
-                            <div class="col-md-3">
-                                <label class="filter-label">Год основания (с)</label>
-                                <input type="number" class="form-control-custom filter-change" id="yearFrom" name="FoundationYearFrom" value="@Model.FoundationYearFrom" placeholder="Например, 1900" />
+                            <div class="col-md-3" id="yearFromFieldWrap">
+                                <label class="filter-label" for="yearFrom">Год основания (с)</label>
+                                <input type="text"
+                                       class="form-control-custom"
+                                       id="yearFrom"
+                                       name="FoundationYearFrom"
+                                       value="@Model.FoundationYearFrom"
+                                       placeholder="Например, 1900"
+                                       inputmode="numeric"
+                                       maxlength="8"
+                                       spellcheck="false"
+                                       autocomplete="off" />
+                                <div class="filter-field-error" id="yearFromError" role="alert" aria-live="polite"></div>
                             </div>
                             <div class="col-md-3">
                                 <label class="filter-label">Сортировка</label>
@@ -791,6 +818,78 @@
             let currentMarker = null;
             let selectedObjects = [];
             let debounceTimer;
+            let yearFromDebounceTimer;
+
+            const catalogMaxFoundationYear = @DateTime.Now.Year;
+
+            /** Возвращает { ok, message }; только целый год цифрами (без дат вида 20-23-13142). Поле text — браузер не «режет» ввод как у type=number. */
+            function getFoundationYearFromValidation() {
+                const el = document.getElementById('yearFrom');
+                const prefix = 'Поле «Год основания (с)»';
+                if (!el) {
+                    return { ok: true, message: '' };
+                }
+                const raw = el.value;
+                const trimmed = raw == null ? '' : String(raw).trim();
+                if (trimmed === '') {
+                    return { ok: true, message: '' };
+                }
+                if (/[^\d]/.test(trimmed)) {
+                    return {
+                        ok: false,
+                        message: prefix + ': укажите только год цифрами. Данное значение недопустимо — используйте одно число, например 1900.'
+                    };
+                }
+                const maxDigits = String(catalogMaxFoundationYear).length;
+                if (trimmed.length > maxDigits) {
+                    return {
+                        ok: false,
+                        message: prefix + ': слишком длинная строка цифр; укажите год не более чем из ' + maxDigits + ' цифр (до ' + catalogMaxFoundationYear + ').'
+                    };
+                }
+                const y = Number.parseInt(trimmed, 10);
+                if (!Number.isFinite(y) || !Number.isSafeInteger(y)) {
+                    return { ok: false, message: prefix + ': значение не является допустимым годом.' };
+                }
+                if (String(y) !== trimmed) {
+                    return {
+                        ok: false,
+                        message: prefix + ': введите год в нормализованном виде без ведущих нулей (например 1900, а не 01900).'
+                    };
+                }
+                if (y < 1) {
+                    return { ok: false, message: prefix + ': год не может быть меньше 1.' };
+                }
+                if (y > catalogMaxFoundationYear) {
+                    return {
+                        ok: false,
+                        message: prefix + ': год не может быть больше ' + catalogMaxFoundationYear + ' (текущий год).'
+                    };
+                }
+                const utc = new Date(Date.UTC(y, 0, 1));
+                if (!Number.isFinite(utc.getTime()) || utc.getUTCFullYear() !== y) {
+                    return { ok: false, message: prefix + ': для этого значения невозможно построить корректную календарную дату.' };
+                }
+                return { ok: true, message: '' };
+            }
+
+            function setFoundationYearFromError(message) {
+                const $inp = $('#yearFrom');
+                const $err = $('#yearFromError');
+                if (message) {
+                    $inp.addClass('is-invalid');
+                    $err.text(message).addClass('is-visible');
+                } else {
+                    $inp.removeClass('is-invalid');
+                    $err.text('').removeClass('is-visible');
+                }
+            }
+
+            function isFoundationYearFromFilterActive() {
+                const v = getFoundationYearFromValidation();
+                const raw = ($('#yearFrom').val() || '').trim();
+                return raw !== '' && v.ok;
+            }
 
             // --- Filter Badge Logic ---
             function updateFilterBadge() {
@@ -798,7 +897,7 @@
                 if ($('#regionSelect').val()) count++;
                 if ($('#districtSelect').val()) count++;
                 if ($('#sortByInput').val()) count++;
-                if ($('#yearFrom').val()) count++;
+                if (isFoundationYearFromFilterActive()) count++;
 
                 const badge = $('#filterCountBadge');
                 const toggleBtn = $('#toggleAdvancedFilters');
@@ -830,7 +929,10 @@
                 if (!$dist.prop('disabled')) {
                     add('districtId', $dist.val());
                 }
-                add('foundationYearFrom', $('#yearFrom').val());
+                const fy = getFoundationYearFromValidation();
+                if (fy.ok && ($('#yearFrom').val() || '').trim() !== '') {
+                    add('foundationYearFrom', $('#yearFrom').val().trim());
+                }
                 add('sortBy', $('#sortByInput').val());
                 add('page', page != null && page !== '' ? page : $('#pageInput').val());
                 add('pageSize', $('input[name="PageSize"]').val());
@@ -838,6 +940,14 @@
             }
 
             function updateSearchResults(page = 1) {
+                const fy = getFoundationYearFromValidation();
+                if (!fy.ok) {
+                    setFoundationYearFromError(fy.message);
+                    updateFilterBadge();
+                    return;
+                }
+                setFoundationYearFromError('');
+
                 $('#pageInput').val(page);
                 const searchData = buildCatalogSearchQueryString(page);
                 const baseUrl = '@Url.Action("Index", "Catalog")';
@@ -919,6 +1029,48 @@
                 updateSearchResults(1);
             });
 
+            $('#yearFrom').on('blur', function() {
+                clearTimeout(yearFromDebounceTimer);
+                const fy = getFoundationYearFromValidation();
+                if (!fy.ok) {
+                    setFoundationYearFromError(fy.message);
+                    updateFilterBadge();
+                    return;
+                }
+                setFoundationYearFromError('');
+                updateFilterBadge();
+                updateSearchResults(1);
+            });
+
+            $('#yearFrom').on('input', function() {
+                clearTimeout(yearFromDebounceTimer);
+                const raw = ($('#yearFrom').val() || '').trim();
+                const fy = getFoundationYearFromValidation();
+                if (raw !== '' && !fy.ok) {
+                    setFoundationYearFromError(fy.message);
+                    updateFilterBadge();
+                    return;
+                }
+                setFoundationYearFromError('');
+                updateFilterBadge();
+                yearFromDebounceTimer = setTimeout(function() {
+                    const v = getFoundationYearFromValidation();
+                    if (($('#yearFrom').val() || '').trim() !== '' && !v.ok) {
+                        setFoundationYearFromError(v.message);
+                        return;
+                    }
+                    setFoundationYearFromError('');
+                    updateSearchResults(1);
+                }, 500);
+            });
+
+            (function initFoundationYearFromFromServer() {
+                const fy = getFoundationYearFromValidation();
+                if (!fy.ok) {
+                    setFoundationYearFromError(fy.message);
+                    updateFilterBadge();
+                }
+            })();
             $(document).on('click', '.page-link[data-page]', function() {
                 const page = $(this).data('page');
                 updateSearchResults(page);
@@ -934,6 +1086,8 @@
                 $('#districtSelect').prop('disabled', true).empty().append('<option value="">Все районы</option>');
                 $('#pageInput').val(1);
                 $('#sortByInput').val('');
+                setFoundationYearFromError('');
+                clearTimeout(yearFromDebounceTimer);
                 updateFilterBadge();
                 updateSearchResults(1);
             });
@@ -1070,6 +1224,19 @@
 
             // --- Selection Logic ---
         $(document).on('click', '#exportPdfBtn', function() {
+            const fy = getFoundationYearFromValidation();
+            if (!fy.ok) {
+                setFoundationYearFromError(fy.message);
+                const $adv = $('#advancedFilters');
+                if (!$adv.hasClass('show')) {
+                    $adv.collapse('show');
+                }
+                setTimeout(function() {
+                    document.getElementById('yearFromFieldWrap')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 250);
+                return;
+            }
+
             // Создаем форму для отправки текущих фильтров
             var form = $('<form>', {
                 'method': 'GET', // Используем GET, так как метод контроллера [HttpGet]

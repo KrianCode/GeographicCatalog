@@ -784,10 +784,36 @@ public IActionResult DetailsATE(int id)
             return d;
         }
 
+        /// <summary>
+        /// Отсекает невозможные годы основания (в т.ч. из подделанного query string) и несогласованные пары «с»/«по».
+        /// </summary>
+        private static void NormalizeCatalogFoundationYears(SearchModel? model)
+        {
+            if (model == null) return;
+            var max = DateTime.UtcNow.Year;
+            if (model.FoundationYearFrom.HasValue)
+            {
+                var y = model.FoundationYearFrom.Value;
+                if (y < 1 || y > max) model.FoundationYearFrom = null;
+            }
+            if (model.FoundationYearTo.HasValue)
+            {
+                var y = model.FoundationYearTo.Value;
+                if (y < 1 || y > max) model.FoundationYearTo = null;
+            }
+            if (model.FoundationYearFrom.HasValue && model.FoundationYearTo.HasValue
+                && model.FoundationYearFrom.Value > model.FoundationYearTo.Value)
+            {
+                model.FoundationYearTo = null;
+            }
+        }
+
         private void SearchObjects(SearchModel model, bool usePagination = true, CatalogSearchMode searchMode = CatalogSearchMode.Catalog)
         {
             try
             {
+                NormalizeCatalogFoundationYears(model);
+
                 using var connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection"));
                 var parameters = new DynamicParameters();
                 var whereClauses = new List<string>();
