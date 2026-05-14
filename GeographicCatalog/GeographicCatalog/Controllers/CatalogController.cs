@@ -680,6 +680,34 @@ public IActionResult DetailsATE(int id)
                 .Select(x => new SelectListItem { Value = x.id_obl.ToString(), Text = x.obl ?? "" })
                 .ToList();
 
+        /// <summary>
+        /// Области, по которым в справочнике нет привязки к районам (например г. Минск как отдельная область в kn_obl).
+        /// Совпадает с логикой отбора районов в <see cref="GetDistrictsByRegion"/>.
+        /// </summary>
+        private static List<int> QueryRegionIdsWithNoDistricts(NpgsqlConnection connection)
+        {
+            const string sql = @"
+                SELECT o.id_obl
+                FROM kn_obl o
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM kn_dbate b WHERE b.id_obl = o.id_obl AND b.id_ra IS NOT NULL
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM kn_dbair a WHERE a.obl = o.id_obl AND a.ra IS NOT NULL
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM kn_dbfgo f WHERE f.obl = o.id_obl AND f.ra IS NOT NULL
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM kn_dbrw w WHERE w.obl = o.id_obl AND w.ra IS NOT NULL
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM kn_dbfgo_obl_ra x WHERE x.obl = o.id_obl AND x.ra IS NOT NULL
+                )
+                ORDER BY o.id_obl";
+            return connection.Query<int>(sql).ToList();
+        }
+
         private void LoadFilterData()
         {
             try
@@ -687,6 +715,7 @@ public IActionResult DetailsATE(int id)
                 using var connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection"));
                 
                 ViewBag.Regions = QueryRegionsForSelect(connection);
+                ViewBag.RegionIdsWithNoDistricts = QueryRegionIdsWithNoDistricts(connection);
                 
                 ViewBag.Statuses = new List<SelectListItem>();
                 
@@ -713,6 +742,7 @@ public IActionResult DetailsATE(int id)
             {
                 _logger?.LogError(ex, "Ошибка при загрузке данных для фильтров");
                 ViewBag.Regions = new List<SelectListItem>();
+                ViewBag.RegionIdsWithNoDistricts = new List<int>();
                 ViewBag.Statuses = new List<SelectListItem>();
                 ViewBag.SortOptions = new List<SelectListItem>();
                 ViewBag.ObjectTypesList = new List<SelectListItem>();
@@ -815,6 +845,10 @@ public IActionResult DetailsATE(int id)
                 NormalizeCatalogFoundationYears(model);
 
                 using var connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+                var regionsWithoutDistricts = QueryRegionIdsWithNoDistricts(connection);
+                if (model.RegionId.HasValue && regionsWithoutDistricts.Contains(model.RegionId.Value))
+                    model.DistrictId = null;
+
                 var parameters = new DynamicParameters();
                 var whereClauses = new List<string>();
                 var exMode = ResolveReportExistenceMode(searchMode, model.ReportExistence);
