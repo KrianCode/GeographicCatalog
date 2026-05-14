@@ -616,8 +616,7 @@ public IActionResult DetailsATE(int id)
             try
             {
                 using var connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-                var regions = connection.Query<SelectListItem>(
-                    "SELECT id_obl as Value, obl as Text FROM kn_obl ORDER BY obl").ToList();
+                var regions = QueryRegionsForSelect(connection);
                 return Json(regions);
             }
             catch (Exception ex)
@@ -647,13 +646,15 @@ public IActionResult DetailsATE(int id)
                         SELECT ra AS DistrictId FROM kn_dbfgo_obl_ra WHERE obl = @RegionId AND ra IS NOT NULL
                     )
                     SELECT
-                        ra.id_ra AS Value,
-                        ra.ra AS Text
+                        ra.id_ra AS id_ra,
+                        ra.ra AS ra_name
                     FROM kn_ra AS ra
                     INNER JOIN AllDistrictIds AS adi ON ra.id_ra = adi.DistrictId
                     ORDER BY ra.ra";
                 
-                var districts = connection.Query<SelectListItem>(query, new { RegionId = regionId }).ToList();
+                var districts = connection.Query<(int id_ra, string ra_name)>(query, new { RegionId = regionId })
+                    .Select(x => new SelectListItem { Value = x.id_ra.ToString(), Text = x.ra_name ?? "" })
+                    .ToList();
                 
                 _logger?.LogInformation("GetDistrictsByRegion: RegionId={RegionId}, Count={Count}", regionId, districts.Count);
                 
@@ -671,14 +672,21 @@ public IActionResult DetailsATE(int id)
             return true;
         }
 
+        /// <summary>
+        /// Dapper не всегда корректно заполняет <see cref="SelectListItem"/> из алиасов Value/Text — id в выпадающем списке может оказаться пустым.
+        /// </summary>
+        private static List<SelectListItem> QueryRegionsForSelect(NpgsqlConnection connection) =>
+            connection.Query<(int id_obl, string obl)>("SELECT id_obl, obl FROM kn_obl ORDER BY obl")
+                .Select(x => new SelectListItem { Value = x.id_obl.ToString(), Text = x.obl ?? "" })
+                .ToList();
+
         private void LoadFilterData()
         {
             try
             {
                 using var connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection"));
                 
-                ViewBag.Regions = connection.Query<SelectListItem>(
-                    "SELECT id_obl as Value, obl as Text FROM kn_obl ORDER BY obl").ToList();
+                ViewBag.Regions = QueryRegionsForSelect(connection);
                 
                 ViewBag.Statuses = new List<SelectListItem>();
                 

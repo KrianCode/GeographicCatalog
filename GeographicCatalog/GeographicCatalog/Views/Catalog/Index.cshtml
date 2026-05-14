@@ -539,7 +539,7 @@
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <label class="filter-label">Область</label>
-                                <select class="form-select-custom filter-change" name="RegionId" id="regionSelect">
+                                <select class="form-select-custom filter-change" name="regionId" id="regionSelect">
                                     <option value="">Все области</option>
                                     @foreach (var region in ViewBag.Regions as List<SelectListItem>)
                                     {
@@ -549,7 +549,7 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="filter-label">Район</label>
-                                <select class="form-select-custom filter-change" name="DistrictId" id="districtSelect" disabled="@(!Model.RegionId.HasValue)">
+                                <select class="form-select-custom filter-change" name="districtId" id="districtSelect" disabled="@(!Model.RegionId.HasValue)">
                                     <option value="">Все районы</option>
                                     @if (Model.RegionId.HasValue && ViewBag.Districts != null)
                                     {
@@ -815,9 +815,31 @@
             function showLoading() { $('#loadingSpinner').css('display', 'flex'); }
             function hideLoading() { $('#loadingSpinner').hide(); }
 
+            /** Собирает query string вручную: serialize() не отправляет disabled-поля и мог оставлять лишний districtId при смене области. */
+            function buildCatalogSearchQueryString(page) {
+                const parts = [];
+                function add(name, val) {
+                    if (val === undefined || val === null || val === '') return;
+                    parts.push(encodeURIComponent(name) + '=' + encodeURIComponent(String(val)));
+                }
+                add('searchQuery', $('#searchQuery').val());
+                add('objectType', $('#objectTypeInput').val());
+                add('firstLetter', $('#firstLetterInput').val());
+                add('regionId', $('#regionSelect').val());
+                const $dist = $('#districtSelect');
+                if (!$dist.prop('disabled')) {
+                    add('districtId', $dist.val());
+                }
+                add('foundationYearFrom', $('#yearFrom').val());
+                add('sortBy', $('#sortByInput').val());
+                add('page', page != null && page !== '' ? page : $('#pageInput').val());
+                add('pageSize', $('input[name="PageSize"]').val());
+                return parts.join('&');
+            }
+
             function updateSearchResults(page = 1) {
                 $('#pageInput').val(page);
-                const searchData = $('#searchForm').serialize();
+                const searchData = buildCatalogSearchQueryString(page);
                 const baseUrl = '@Url.Action("Index", "Catalog")';
                 const newUrl = baseUrl + '?' + searchData;
 
@@ -876,6 +898,22 @@
                 }, 500);
             });
 
+            // Должен выполняться до .filter-change: иначе при смене области первым уходит запрос
+            // со старым DistrictId от предыдущей области (0 результатов).
+            $('#regionSelect').change(function() {
+                const regionId = $(this).val();
+                const $districtSelect = $('#districtSelect');
+                $districtSelect.prop('disabled', true).empty().append('<option value="">Все районы</option>');
+                if (regionId) {
+                    $.get('@Url.Action("GetDistrictsByRegion", "Catalog")', { regionId: regionId }, function(data) {
+                        $.each(data, function(index, item) {
+                            $districtSelect.append($('<option>', { value: item.value, text: item.text }));
+                        });
+                        $districtSelect.prop('disabled', false);
+                    });
+                }
+            });
+
             $('.filter-change').on('change input', function() {
                 updateFilterBadge();
                 updateSearchResults(1);
@@ -898,20 +936,6 @@
                 $('#sortByInput').val('');
                 updateFilterBadge();
                 updateSearchResults(1);
-            });
-
-            $('#regionSelect').change(function() {
-                const regionId = $(this).val();
-                const $districtSelect = $('#districtSelect');
-                $districtSelect.prop('disabled', true).empty().append('<option value="">Все районы</option>');
-                if (regionId) {
-                    $.get('@Url.Action("GetDistrictsByRegion", "Catalog")', { regionId: regionId }, function(data) {
-                        $.each(data, function(index, item) {
-                            $districtSelect.append($('<option>', { value: item.value, text: item.text }));
-                        });
-                        $districtSelect.prop('disabled', false);
-                    });
-                }
             });
 
             $('#toggleAdvancedFilters').click(function() {
@@ -1054,15 +1078,16 @@
             });
 
             // Собираем данные из основной формы поиска
-            var formData = $('#searchForm').serializeArray();
-
-            $.each(formData, function(i, field) {
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: field.name,
-                    value: field.value
-                }).appendTo(form);
-            });
+            var qs = buildCatalogSearchQueryString($('#pageInput').val() || 1);
+            if (qs) {
+                qs.split('&').forEach(function(pair) {
+                    if (!pair) return;
+                    var eq = pair.indexOf('=');
+                    var k = decodeURIComponent(eq >= 0 ? pair.substring(0, eq) : pair);
+                    var v = decodeURIComponent(eq >= 0 ? pair.substring(eq + 1) : '');
+                    $('<input>').attr({ type: 'hidden', name: k, value: v }).appendTo(form);
+                });
+            }
 
             form.appendTo('body').submit().remove();
         });
