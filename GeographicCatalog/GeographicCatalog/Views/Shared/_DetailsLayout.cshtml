@@ -141,8 +141,9 @@
         }
 
         function showOnMap(lat, lon, title) {
-            // Реализация показа на карте
-            alert(`Показать на карте: ${title}\nШирота: ${lat}\nДолгота: ${lon}`);
+            const z = 14;
+            const url = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=${z}/${lat}/${lon}`;
+            window.open(url, '_blank', 'noopener,noreferrer');
         }
 
         function printDetails() {

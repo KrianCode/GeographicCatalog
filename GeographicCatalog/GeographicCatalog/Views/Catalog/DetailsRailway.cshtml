@@ -758,7 +758,8 @@
         }
 
         function showOnMap(lat, lon, name) {
-            const url = `https://yandex.ru/maps/?pt=${lon},${lat}&z=15&l=map&text=${encodeURIComponent(name)}`;
+            const z = 15;
+            const url = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=${z}/${lat}/${lon}`;
             window.open(url, '_blank');
         }
     </script>
