@@ -1,0 +1,405 @@
+﻿<footer class="footer mt-auto position-relative overflow-hidden" style="background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 50%, #161b22 100%);">
+    <!-- Декоративные элементы -->
+    <div class="position-absolute top-0 start-0 w-100 h-100 overflow-hidden" style="pointer-events: none;">
+        <div class="position-absolute" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%); top: -200px; right: 10%;"></div>
+        <div class="position-absolute" style="width: 300px; height: 300px; background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%); bottom: -100px; left: 5%;"></div>
+    </div>
+
+    <!-- Верхняя декоративная линия -->
+    <div class="position-absolute top-0 start-0 w-100" style="height: 3px; background: linear-gradient(90deg, transparent, #3b82f6, #10b981, #f59e0b, transparent);"></div>
+
+    <div class="container-fluid position-relative pt-5 pb-4">
+        <div class="row g-4">
+            <!-- Колонка 1: О системе -->
+            <div class="col-lg-3 col-md-6">
+                <div class="mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="d-flex align-items-center justify-content-center rounded-3 me-3"
+                             style="width: 48px; height: 48px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);">
+                            <i class="bi bi-geo-alt-fill text-white fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold text-white">ГеоКаталог</h5>
+                            <span class="badge text-uppercase" style="font-size: 9px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); letter-spacing: 1px;">Beta</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="small mb-4" style="color: rgba(255, 255, 255, 0.6); line-height: 1.7;">
+                    Государственный каталог наименований географических объектов
+                    Республики Беларусь. Официальная информационная система
+                    государственного предприятия «Белгеодезия».
+                </p>
+                <div class="d-flex gap-2">
+                    <a href="#" class="d-flex align-items-center justify-content-center rounded-3 text-white text-decoration-none transition-all"
+                       style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease;"
+                       onmouseover="this.style.background='linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 4px 15px rgba(59, 130, 246, 0.4)';"
+                       onmouseout="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                        <i class="bi bi-question-circle"></i>
+                    </a>
+                    <a href="#" class="d-flex align-items-center justify-content-center rounded-3 text-white text-decoration-none"
+                       style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease;"
+                       onmouseover="this.style.background='linear-gradient(135deg, #10b981 0%, #059669 100%)'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 4px 15px rgba(16, 185, 129, 0.4)';"
+                       onmouseout="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                        <i class="bi bi-file-text"></i>
+                    </a>
+                    <a href="#" class="d-flex align-items-center justify-content-center rounded-3 text-white text-decoration-none"
+                       style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease;"
+                       onmouseover="this.style.background='linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 4px 15px rgba(245, 158, 11, 0.4)';"
+                       onmouseout="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                        <i class="bi bi-envelope"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Колонка 2: Навигация -->
+            <div class="col-lg-2 col-md-6">
+                <h6 class="fw-bold text-uppercase mb-4 d-flex align-items-center" style="color: rgba(255, 255, 255, 0.9); font-size: 12px; letter-spacing: 1.5px;">
+                    <span class="d-inline-block me-2" style="width: 20px; height: 2px; background: linear-gradient(90deg, #3b82f6, #10b981);"></span>
+                    Навигация
+                </h6>
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <a asp-controller="Home" asp-action="Index" class="text-decoration-none d-flex align-items-center footer-link"
+                           style="color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;"
+                           onmouseover="this.style.color='#3b82f6'; this.style.paddingLeft='8px';"
+                           onmouseout="this.style.color='rgba(255, 255, 255, 0.6)'; this.style.paddingLeft='0';">
+                            <i class="bi bi-chevron-right me-2" style="font-size: 10px;"></i>Главная
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a asp-controller="Catalog" asp-action="Index" class="text-decoration-none d-flex align-items-center"
+                           style="color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;"
+                           onmouseover="this.style.color='#3b82f6'; this.style.paddingLeft='8px';"
+                           onmouseout="this.style.color='rgba(255, 255, 255, 0.6)'; this.style.paddingLeft='0';">
+                            <i class="bi bi-chevron-right me-2" style="font-size: 10px;"></i>Поиск в каталоге
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="#" class="text-decoration-none d-flex align-items-center"
+                           style="color: rgba(255, 255, 255, 0.3); cursor: not-allowed;">
+                            <i class="bi bi-chevron-right me-2" style="font-size: 10px;"></i>Картографическая система
+                            <span class="badge ms-2" style="font-size: 8px; background: rgba(255, 255, 255, 0.1);">скоро</span>
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a asp-controller="Home" asp-action="About" class="text-decoration-none d-flex align-items-center"
+                           style="color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;"
+                           onmouseover="this.style.color='#3b82f6'; this.style.paddingLeft='8px';"
+                           onmouseout="this.style.color='rgba(255, 255, 255, 0.6)'; this.style.paddingLeft='0';">
+                            <i class="bi bi-chevron-right me-2" style="font-size: 10px;"></i>О проекте
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="#" class="text-decoration-none d-flex align-items-center"
+                           style="color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;"
+                           onmouseover="this.style.color='#3b82f6'; this.style.paddingLeft='8px';"
+                           onmouseout="this.style.color='rgba(255, 255, 255, 0.6)'; this.style.paddingLeft='0';">
+                            <i class="bi bi-chevron-right me-2" style="font-size: 10px;"></i>Документация
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Колонка 3: Контакты -->
+            <div class="col-lg-3 col-md-6">
+                <h6 class="fw-bold text-uppercase mb-4 d-flex align-items-center" style="color: rgba(255, 255, 255, 0.9); font-size: 12px; letter-spacing: 1.5px;">
+                    <span class="d-inline-block me-2" style="width: 20px; height: 2px; background: linear-gradient(90deg, #10b981, #3b82f6);"></span>
+                    Контакты
+                </h6>
+                <ul class="list-unstyled">
+                    <li class="mb-3 d-flex align-items-start">
+                        <div class="d-flex align-items-center justify-content-center rounded-2 me-3 flex-shrink-0"
+                             style="width: 32px; height: 32px; background: rgba(59, 130, 246, 0.15);">
+                            <i class="bi bi-geo-alt" style="color: #3b82f6;"></i>
+                        </div>
+                        <span class="small" style="color: rgba(255, 255, 255, 0.6); line-height: 1.6;">г. Минск, ул. Кальварийская, 17</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-start">
+                        <div class="d-flex align-items-center justify-content-center rounded-2 me-3 flex-shrink-0"
+                             style="width: 32px; height: 32px; background: rgba(16, 185, 129, 0.15);">
+                            <i class="bi bi-telephone" style="color: #10b981;"></i>
+                        </div>
+                        <span class="small" style="color: rgba(255, 255, 255, 0.6); line-height: 1.6;">+375 (17) 292-XX-XX</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-start">
+                        <div class="d-flex align-items-center justify-content-center rounded-2 me-3 flex-shrink-0"
+                             style="width: 32px; height: 32px; background: rgba(245, 158, 11, 0.15);">
+                            <i class="bi bi-envelope" style="color: #f59e0b;"></i>
+                        </div>
+                        <span class="small" style="color: rgba(255, 255, 255, 0.6); line-height: 1.6;">info@belgeodesy.by</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-start">
+                        <div class="d-flex align-items-center justify-content-center rounded-2 me-3 flex-shrink-0"
+                             style="width: 32px; height: 32px; background: rgba(139, 92, 246, 0.15);">
+                            <i class="bi bi-clock" style="color: #8b5cf6;"></i>
+                        </div>
+                        <span class="small" style="color: rgba(255, 255, 255, 0.6); line-height: 1.6;">Пн-Пт: 8:30-17:30</span>
+                    </li>
+                </ul>
+                <button type="button" class="btn btn-sm px-4 py-2 rounded-pill fw-medium text-white border-0 mt-2"
+                        data-bs-toggle="modal" data-bs-target="#contactModal"
+                        style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); transition: all 0.3s ease;"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.4)';"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(59, 130, 246, 0.3)';">
+                    <i class="bi bi-chat-left-text me-2"></i>Обратная связь
+                </button>
+            </div>
+
+            <!-- Колонка 4: Полезные ссылки + Статистика -->
+            <div class="col-lg-4 col-md-6">
+                <h6 class="fw-bold text-uppercase mb-4 d-flex align-items-center" style="color: rgba(255, 255, 255, 0.9); font-size: 12px; letter-spacing: 1.5px;">
+                    <span class="d-inline-block me-2" style="width: 20px; height: 2px; background: linear-gradient(90deg, #f59e0b, #ef4444);"></span>
+                    Полезные ссылки
+                </h6>
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <a href="https://geo.by" target="_blank" class="text-decoration-none d-flex align-items-center small"
+                                   style="color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;"
+                                   onmouseover="this.style.color='#10b981';"
+                                   onmouseout="this.style.color='rgba(255, 255, 255, 0.6)';">
+                                    <i class="bi bi-box-arrow-up-right me-2" style="font-size: 10px;"></i>Белгеодезия
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="http://maps.by" target="_blank" class="text-decoration-none d-flex align-items-center small"
+                                   style="color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;"
+                                   onmouseover="this.style.color='#10b981';"
+                                   onmouseout="this.style.color='rgba(255, 255, 255, 0.6)';">
+                                    <i class="bi bi-box-arrow-up-right me-2" style="font-size: 10px;"></i>Карты Беларуси
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="https://president.gov.by" target="_blank" class="text-decoration-none d-flex align-items-center small"
+                                   style="color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;"
+                                   onmouseover="this.style.color='#10b981';"
+                                   onmouseout="this.style.color='rgba(255, 255, 255, 0.6)';">
+                                    <i class="bi bi-box-arrow-up-right me-2" style="font-size: 10px;"></i>Президент РБ
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="https://www.belstat.gov.by" target="_blank" class="text-decoration-none d-flex align-items-center small"
+                                   style="color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;"
+                                   onmouseover="this.style.color='#10b981';"
+                                   onmouseout="this.style.color='rgba(255, 255, 255, 0.6)';">
+                                    <i class="bi bi-box-arrow-up-right me-2" style="font-size: 10px;"></i>Белстат
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <a href="https://eurogeographics.org" target="_blank" class="text-decoration-none d-flex align-items-center small"
+                                   style="color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;"
+                                   onmouseover="this.style.color='#10b981';"
+                                   onmouseout="this.style.color='rgba(255, 255, 255, 0.6)';">
+                                    <i class="bi bi-box-arrow-up-right me-2" style="font-size: 10px;"></i>EuroGeographics
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="https://www.unece.org" target="_blank" class="text-decoration-none d-flex align-items-center small"
+                                   style="color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;"
+                                   onmouseover="this.style.color='#10b981';"
+                                   onmouseout="this.style.color='rgba(255, 255, 255, 0.6)';">
+                                    <i class="bi bi-box-arrow-up-right me-2" style="font-size: 10px;"></i>ЕЭК ООН
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="https://www.unesco.org" target="_blank" class="text-decoration-none d-flex align-items-center small"
+                                   style="color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;"
+                                   onmouseover="this.style.color='#10b981';"
+                                   onmouseout="this.style.color='rgba(255, 255, 255, 0.6)';">
+                                    <i class="bi bi-box-arrow-up-right me-2" style="font-size: 10px;"></i>ЮНЕСКО
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none d-flex align-items-center small"
+                                   style="color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;"
+                                   onmouseover="this.style.color='#10b981';"
+                                   onmouseout="this.style.color='rgba(255, 255, 255, 0.6)';">
+                                    <i class="bi bi-box-arrow-up-right me-2" style="font-size: 10px;"></i>API документация
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Статистика системы -->
+                <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+                    <div class="row text-center g-2">
+                        <div class="col-4">
+                            <div class="p-2 rounded-2" style="background: rgba(59, 130, 246, 0.1);">
+                                <div class="fw-bold fs-5" style="background: linear-gradient(135deg, #3b82f6, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                    @(ViewBag.TotalATE ?? 0)
+                                </div>
+                                <div style="font-size: 10px; color: rgba(255, 255, 255, 0.5);">Нас. пункты</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2 rounded-2" style="background: rgba(16, 185, 129, 0.1);">
+                                <div class="fw-bold fs-5" style="background: linear-gradient(135deg, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                    @(ViewBag.TotalAirports ?? 0)
+                                </div>
+                                <div style="font-size: 10px; color: rgba(255, 255, 255, 0.5);">Аэропорты</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2 rounded-2" style="background: rgba(245, 158, 11, 0.1);">
+                                <div class="fw-bold fs-5" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                    @((ViewBag.TotalATE + ViewBag.TotalAirports + ViewBag.TotalRailway + ViewBag.TotalFGO) ?? 0)
+                                </div>
+                                <div style="font-size: 10px; color: rgba(255, 255, 255, 0.5);">Всего</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Нижняя часть футера -->
+        <div class="row mt-5 pt-4 align-items-center" style="border-top: 1px solid rgba(255, 255, 255, 0.08);">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <p class="small mb-1" style="color: rgba(255, 255, 255, 0.7);">
+                    &copy; @DateTime.Now.Year Государственное предприятие «Белгеодезия». Все права защищены.
+                </p>
+                <p class="small mb-0 d-flex align-items-center flex-wrap gap-2" style="color: rgba(255, 255, 255, 0.4);">
+                    <span class="badge rounded-pill" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; font-weight: 500;">v1.0.0-beta</span>
+                    <span>Обновлено: @DateTime.Now.ToString("dd.MM.yyyy")</span>
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="d-flex flex-wrap justify-content-md-end gap-3 mb-2">
+                    <a href="#" class="text-decoration-none small"
+                       style="color: rgba(255, 255, 255, 0.5); transition: color 0.3s ease;"
+                       onmouseover="this.style.color='#3b82f6';"
+                       onmouseout="this.style.color='rgba(255, 255, 255, 0.5)';">Политика конфиденциальности</a>
+                    <a href="#" class="text-decoration-none small"
+                       style="color: rgba(255, 255, 255, 0.5); transition: color 0.3s ease;"
+                       onmouseover="this.style.color='#3b82f6';"
+                       onmouseout="this.style.color='rgba(255, 255, 255, 0.5)';">Условия использования</a>
+                    <a href="#" class="text-decoration-none small"
+                       style="color: rgba(255, 255, 255, 0.5); transition: color 0.3s ease;"
+                       onmouseover="this.style.color='#3b82f6';"
+                       onmouseout="this.style.color='rgba(255, 255, 255, 0.5)';">Карта сайта</a>
+                </div>
+                <p class="small mb-0 d-flex align-items-center justify-content-md-end gap-2" style="color: rgba(255, 255, 255, 0.4);">
+                    <span class="d-flex align-items-center">
+                        <span class="d-inline-block rounded-circle me-1" style="width: 6px; height: 6px; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+                        ASP.NET Core 8.0
+                    </span>
+                    <span style="color: rgba(255, 255, 255, 0.2);">|</span>
+                    <span>SQL Server 2022</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Модальное окно обратной связи -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 overflow-hidden" style="background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%); box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);">
+            <!-- Заголовок модального окна -->
+            <div class="modal-header border-0 position-relative" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); padding: 1.5rem;">
+                <div class="position-absolute top-0 end-0 w-100 h-100 overflow-hidden" style="pointer-events: none;">
+                    <div class="position-absolute" style="width: 150px; height: 150px; background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%); top: -75px; right: -75px;"></div>
+                </div>
+                <div class="d-flex align-items-center position-relative">
+                    <div class="d-flex align-items-center justify-content-center rounded-3 me-3"
+                         style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-chat-left-text text-white fs-5"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0 text-white fw-bold" id="contactModalLabel">Обратная связь</h5>
+                        <small class="text-white" style="opacity: 0.8;">Мы ответим в течение 24 часов</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close position-relative" data-bs-dismiss="modal" aria-label="Закрыть"
+                        style="filter: brightness(0) invert(1); opacity: 0.8;"></button>
+            </div>
+
+            <!-- Тело модального окна -->
+            <div class="modal-body p-4">
+                <form id="feedbackForm">
+                    <div class="mb-4">
+                        <label for="feedbackName" class="form-label small fw-medium" style="color: rgba(255, 255, 255, 0.7);">Ваше имя</label>
+                        <div class="position-relative">
+                            <i class="bi bi-person position-absolute" style="left: 14px; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.4);"></i>
+                            <input type="text" class="form-control border-0 ps-5" id="feedbackName" required placeholder="Введите ваше имя"
+                                   style="background: rgba(255, 255, 255, 0.08); color: white; padding: 12px 14px 12px 42px; border-radius: 10px;"
+                                   onfocus="this.style.background='rgba(59, 130, 246, 0.15)'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)';"
+                                   onblur="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.boxShadow='none';">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="feedbackEmail" class="form-label small fw-medium" style="color: rgba(255, 255, 255, 0.7);">Email для ответа</label>
+                        <div class="position-relative">
+                            <i class="bi bi-envelope position-absolute" style="left: 14px; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.4);"></i>
+                            <input type="email" class="form-control border-0 ps-5" id="feedbackEmail" required placeholder="example@email.com"
+                                   style="background: rgba(255, 255, 255, 0.08); color: white; padding: 12px 14px 12px 42px; border-radius: 10px;"
+                                   onfocus="this.style.background='rgba(59, 130, 246, 0.15)'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)';"
+                                   onblur="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.boxShadow='none';">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="feedbackType" class="form-label small fw-medium" style="color: rgba(255, 255, 255, 0.7);">Тип обращения</label>
+                        <div class="position-relative">
+                            <i class="bi bi-tag position-absolute" style="left: 14px; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.4); z-index: 1;"></i>
+                            <select class="form-select border-0 ps-5" id="feedbackType"
+                                    style="background: rgba(255, 255, 255, 0.08); color: white; padding: 12px 14px 12px 42px; border-radius: 10px; cursor: pointer;"
+                                    onfocus="this.style.background='rgba(59, 130, 246, 0.15)'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)';"
+                                    onblur="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.boxShadow='none';">
+                                <option value="error" style="background: #1a1f2e;">Сообщение об ошибке</option>
+                                <option value="suggestion" style="background: #1a1f2e;">Предложение по улучшению</option>
+                                <option value="question" style="background: #1a1f2e;">Вопрос по использованию</option>
+                                <option value="data" style="background: #1a1f2e;">Уточнение данных</option>
+                                <option value="other" style="background: #1a1f2e;">Другое</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="feedbackMessage" class="form-label small fw-medium" style="color: rgba(255, 255, 255, 0.7);">Сообщение</label>
+                        <div class="position-relative">
+                            <textarea class="form-control border-0" id="feedbackMessage" rows="4" required placeholder="Опишите ваш вопрос или предложение..."
+                                      style="background: rgba(255, 255, 255, 0.08); color: white; padding: 14px; border-radius: 10px; resize: none;"
+                                      onfocus="this.style.background='rgba(59, 130, 246, 0.15)'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)';"
+                                      onblur="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.boxShadow='none';"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Футер модального окна -->
+            <div class="modal-footer border-0 px-4 pb-4 pt-0 gap-2">
+                <button type="button" class="btn px-4 py-2 rounded-pill fw-medium" data-bs-dismiss="modal"
+                        style="background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease;"
+                        onmouseover="this.style.background='rgba(255, 255, 255, 0.15)';"
+                        onmouseout="this.style.background='rgba(255, 255, 255, 0.08)';">
+                    Отмена
+                </button>
+                <button type="button" class="btn px-4 py-2 rounded-pill fw-medium text-white border-0" onclick="submitFeedback()"
+                        style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); transition: all 0.3s ease;"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.5)';"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(59, 130, 246, 0.4)';">
+                    <i class="bi bi-send me-2"></i>Отправить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function submitFeedback() {
+        const form = document.getElementById('feedbackForm');
+        if (form.checkValidity()) {
+            // Здесь будет отправка формы
+            alert('Спасибо за ваше сообщение! Мы рассмотрим его в ближайшее время.');
+            $('#contactModal').modal('hide');
+            form.reset();
+        } else {
+            form.reportValidity();
+        }
+    }
+</script>

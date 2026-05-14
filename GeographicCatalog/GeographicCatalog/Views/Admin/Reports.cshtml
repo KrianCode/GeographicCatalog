@@ -1,0 +1,480 @@
+@model GeographicCatalog.Models.SearchModel
+@{
+    ViewData["Title"] = "Отчеты — Админ";
+    var regions = ViewBag.Regions as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+    var districts = ViewBag.Districts as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+    var reportTypes = Model.ObjectTypes.Where(kv => !string.IsNullOrEmpty(kv.Key)).ToList();
+    var selectedReportTypes = Model.ReportObjectTypes ?? new List<string>();
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">Админ-панель</a></li>
+        <li class="breadcrumb-item active">Отчеты</li>
+    </ol>
+    </nav>
+
+<h2 class="h4 mb-4" style="color: var(--text-body);">Формирование отчетов</h2>
+
+<div class="card border-0 shadow-sm rounded-3 mb-4" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+    <div class="card-header" style="background-color: var(--bg-body); border-bottom: 1px solid var(--border-color);">
+        <strong>Критерии отбора</strong>
+    </div>
+    <div class="card-body">
+        <form id="criteriaForm" method="get" action="@Url.Action("ExportAdminReportPdf", "Catalog")" target="_blank" class="row g-3">
+            <input type="hidden" name="reportKind" id="reportKind" value="time_list" />
+
+            <div class="col-12">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <span class="form-label small text-muted mb-0">Типы объектов (не отмечено — все типы)</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-report-types-all" title="Отметить все типы">Выбрать все</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-report-types-none" title="Снять все типы">Снять все</button>
+                </div>
+                <div class="d-flex flex-wrap gap-3">
+                    @foreach (var kv in reportTypes)
+                    {
+                        var chk = selectedReportTypes.Contains(kv.Key, StringComparer.OrdinalIgnoreCase);
+                        <div class="form-check">
+                            <input class="form-check-input js-report-type" type="checkbox" name="ReportObjectTypes" value="@kv.Key" id="rt_@kv.Key" @(chk ? "checked" : null) />
+                            <label class="form-check-label" for="rt_@kv.Key">@kv.Value</label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <span class="form-label small text-muted mb-0">Подтипы (появляются для отмеченных типов; не отмечено — все подтипы выбранных типов)</span>
+                    <span id="report-subtype-buttons" class="d-none align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-report-subtypes-all" title="Отметить все подтипы">Выбрать все</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-report-subtypes-none" title="Снять все подтипы">Снять все</button>
+                    </span>
+                </div>
+                <div id="report-subtypes" class="row g-2 border rounded-3 p-3 bg-light bg-opacity-25" style="min-height: 3rem;">
+                    <span class="text-muted small" id="report-subtypes-placeholder">Отметьте тип объекта, чтобы загрузить подтипы.</span>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="SearchQuery" class="form-label small text-muted"></label>
+                <input asp-for="SearchQuery" class="form-control" placeholder="Поиск по названию" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small text-muted" for="ReportExistence">Статус существования</label>
+                <select asp-for="ReportExistence" id="ReportExistence" class="form-select">
+                    <option value="exists">Существующие (как в каталоге)</option>
+                    <option value="any">Все статусы</option>
+                    <option value="not_exists">Не «существует»</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small text-muted">Область</label>
+                <select asp-for="RegionId" class="form-select" id="rep-region">
+                    <option value="">— Все —</option>
+                    @foreach (var r in regions)
+                    {
+                        if (Model.RegionId?.ToString() == r.Value)
+                        {
+                            <option value="@r.Value" selected>@r.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@r.Value">@r.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small text-muted">Район</label>
+                <select asp-for="DistrictId" class="form-select" id="rep-district">
+                    <option value="">— Все —</option>
+                    @foreach (var d in districts)
+                    {
+                        if (Model.DistrictId?.ToString() == d.Value)
+                        {
+                            <option value="@d.Value" selected>@d.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@d.Value">@d.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="CreatedFrom" class="form-label small text-muted">Период с</label>
+                <input asp-for="CreatedFrom" class="form-control" type="date" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="CreatedTo" class="form-label small text-muted">Период по</label>
+                <input asp-for="CreatedTo" class="form-control" type="date" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="FoundationYearFrom" class="form-label small text-muted">Год основания с</label>
+                <input asp-for="FoundationYearFrom" class="form-control" type="number" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="FoundationYearTo" class="form-label small text-muted">Год основания по</label>
+                <input asp-for="FoundationYearTo" class="form-control" type="number" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="MinPopulation" class="form-label small text-muted">Население от</label>
+                <input asp-for="MinPopulation" class="form-control" type="number" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="MaxPopulation" class="form-label small text-muted">Население до</label>
+                <input asp-for="MaxPopulation" class="form-control" type="number" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="SortBy" class="form-label small text-muted">Сортировка</label>
+                <select asp-for="SortBy" class="form-select">
+                    <option value="">По названию (А-Я)</option>
+                    <option value="name_desc">По названию (Я-А)</option>
+                    <option value="date_desc">По дате (новые сверху)</option>
+                    <option value="population_desc">По населению (убыв.)</option>
+                    <option value="elevation_desc">По высоте (убыв.)</option>
+                </select>
+            </div>
+
+            <div class="col-12"><hr class="my-2" /></div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit"
+                        class="btn btn-primary w-100"
+                        onclick="document.getElementById('reportKind').value='time_list';">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> PDF: список по критериям
+                </button>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit"
+                        class="btn btn-outline-primary w-100"
+                        onclick="document.getElementById('reportKind').value='count_by_type';">
+                    <i class="bi bi-file-earmark-bar-graph me-1"></i> PDF: количество по типам
+                </button>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit"
+                        class="btn btn-outline-primary w-100"
+                        onclick="document.getElementById('reportKind').value='count_by_status';">
+                    <i class="bi bi-pie-chart me-1"></i> PDF: количество по статусу
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<form id="refForm" method="get" action="@Url.Action("ExportAdminReportPdf", "Catalog")" target="_blank">
+    <input type="hidden" name="reportKind" id="refReportKind" value="ref_list" />
+    <input type="hidden" name="referenceGroup" id="refReferenceGroup" value="regions" />
+    <div id="refReportParams"></div>
+    <input type="hidden" name="SearchQuery" value="@(Model.SearchQuery ?? "")" />
+    <input type="hidden" name="RegionId" value="@(Model.RegionId.HasValue ? Model.RegionId.Value.ToString() : "")" />
+    <input type="hidden" name="DistrictId" value="@(Model.DistrictId.HasValue ? Model.DistrictId.Value.ToString() : "")" />
+    <input type="hidden" name="CreatedFrom" value="@(Model.CreatedFrom.HasValue ? Model.CreatedFrom.Value.ToString("yyyy-MM-dd") : "")" />
+    <input type="hidden" name="CreatedTo" value="@(Model.CreatedTo.HasValue ? Model.CreatedTo.Value.ToString("yyyy-MM-dd") : "")" />
+    <input type="hidden" name="FoundationYearFrom" value="@(Model.FoundationYearFrom.HasValue ? Model.FoundationYearFrom.Value.ToString() : "")" />
+    <input type="hidden" name="FoundationYearTo" value="@(Model.FoundationYearTo.HasValue ? Model.FoundationYearTo.Value.ToString() : "")" />
+    <input type="hidden" name="MinPopulation" value="@(Model.MinPopulation.HasValue ? Model.MinPopulation.Value.ToString() : "")" />
+    <input type="hidden" name="MaxPopulation" value="@(Model.MaxPopulation.HasValue ? Model.MaxPopulation.Value.ToString() : "")" />
+    <input type="hidden" name="SortBy" value="@(Model.SortBy ?? "")" />
+    <input type="hidden" name="ReportExistence" id="refReportExistence" value="@(Model.ReportExistence ?? "exists")" />
+
+    <div class="card border-0 shadow-sm rounded-3 mb-4" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+    <div class="card-header" style="background-color: var(--bg-body); border-bottom: 1px solid var(--border-color);">
+        <strong>Эталонные сведения</strong>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="p-3 border rounded-3 h-100">
+                    <div class="mb-2 fw-semibold">Области</div>
+                    <button type="submit"
+                            class="btn btn-secondary w-100 mb-2"
+                            onclick="document.getElementById('refReportKind').value='ref_list'; document.getElementById('refReferenceGroup').value='regions';">
+                        PDF: сведения (список)
+                    </button>
+                    <button type="submit"
+                            class="btn btn-outline-secondary w-100"
+                            onclick="document.getElementById('refReportKind').value='ref_counts'; document.getElementById('refReferenceGroup').value='regions';">
+                        PDF: количество
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-3 border rounded-3 h-100">
+                    <div class="mb-2 fw-semibold">Районы</div>
+                    <button type="submit"
+                            class="btn btn-secondary w-100 mb-2"
+                            onclick="document.getElementById('refReportKind').value='ref_list'; document.getElementById('refReferenceGroup').value='districts';">
+                        PDF: сведения (список)
+                    </button>
+                    <button type="submit"
+                            class="btn btn-outline-secondary w-100"
+                            onclick="document.getElementById('refReportKind').value='ref_counts'; document.getElementById('refReferenceGroup').value='districts';">
+                        PDF: количество
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-3 border rounded-3 h-100">
+                    <div class="mb-2 fw-semibold">Типы объектов</div>
+                    <button type="submit"
+                            class="btn btn-secondary w-100 mb-2"
+                            onclick="document.getElementById('refReportKind').value='ref_list'; document.getElementById('refReferenceGroup').value='types';">
+                        PDF: сведения (список)
+                    </button>
+                    <button type="submit"
+                            class="btn btn-outline-secondary w-100"
+                            onclick="document.getElementById('refReportKind').value='ref_counts'; document.getElementById('refReferenceGroup').value='types';">
+                        PDF: количество
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+@section Scripts {
+<script>
+var preselectedReportSubtypes = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ReportSubtypeTags ?? new List<string>()));
+(function () {
+    var getDistrictsUrl = '@Url.Action("GetDistrictsForAdmin", "Admin")';
+    var getSubtypesUrl = '@Url.Action("GetReportSubtypes", "Admin")';
+    var regionEl = document.getElementById('rep-region');
+    var districtEl = document.getElementById('rep-district');
+    var selectedDistrictOnLoad = districtEl ? districtEl.value : '';
+    var allowedDistrictsByRegion = {
+        'Брестская': ['Барановичский', 'Березовский', 'Брестский', 'Ганцевичский', 'Дрогичинский', 'Жабинковский', 'Ивановский', 'Ивацевичский', 'Каменецкий', 'Кобринский', 'Лунинецкий', 'Ляховичский', 'Малоритский', 'Пинский', 'Пружанский', 'Столинский'],
+        'Витебская': ['Бешенковичский', 'Браславский', 'Верхнедвинский', 'Витебский', 'Глубокский', 'Городокский', 'Докшицкий', 'Дубровенский', 'Лепельский', 'Лиозненский', 'Миорский', 'Оршанский', 'Полоцкий', 'Поставский', 'Россонский', 'Сенненский', 'Толочинский', 'Ушачский', 'Чашникский', 'Шарковщинский', 'Шумилинский'],
+        'Гомельская': ['Брагинский', 'Буда-Кошелевский', 'Ветковский', 'Гомельский', 'Добрушский', 'Ельский', 'Житковичский', 'Жлобинский', 'Калинковичский', 'Кормянский', 'Лельчицкий', 'Лоевский', 'Мозырский', 'Наровлянский', 'Октябрьский', 'Петриковский', 'Речицкий', 'Рогачевский', 'Светлогорский', 'Хойникский', 'Чечерский'],
+        'Гродненская': ['Берестовицкий', 'Волковысский', 'Вороновский', 'Гродненский', 'Дятловский', 'Зельвенский', 'Ивьевский', 'Кореличский', 'Лидский', 'Мостовский', 'Новогрудский', 'Островецкий', 'Ошмянский', 'Свислочский', 'Слонимский', 'Сморгонский', 'Щучинский'],
+        'Минская': ['Березинский', 'Борисовский', 'Вилейский', 'Воложинский', 'Дзержинский', 'Клецкий', 'Копыльский', 'Крупский', 'Логойский', 'Любанский', 'Минский', 'Молодечненский', 'Мядельский', 'Несвижский', 'Пуховичский', 'Слуцкий', 'Смолевичский', 'Солигорский', 'Стародорожский', 'Столбцовский', 'Узденский', 'Червенский'],
+        'Могилевская': ['Бобруйский', 'Белыничский', 'Быховский', 'Глусский', 'Горецкий', 'Дрибинский', 'Кировский', 'Кличевский', 'Климовичский', 'Костюковичский', 'Краснопольский', 'Кричевский', 'Круглянский', 'Могилевский', 'Мстиславский', 'Осиповичский', 'Славгородский', 'Чаусский', 'Чериковский', 'Шкловский', 'Хотимский']
+    };
+
+    function normalizeName(value) {
+        return (value || '')
+            .toString()
+            .trim()
+            .toLowerCase()
+            .replace(/ё/g, 'е');
+    }
+
+    function renderDistrictOptions(rawDistricts, keepValue) {
+        var selectedRegionText = regionEl && regionEl.selectedOptions.length ? regionEl.selectedOptions[0].text : '';
+        var regionKey = normalizeName(selectedRegionText);
+        var allowed = allowedDistrictsByRegion[regionKey] || null;
+
+        districtEl.innerHTML = '<option value="">— Все —</option>';
+        (rawDistricts || []).forEach(function (d) {
+            var text = (d.text != null ? d.text : d.Text) || '';
+            var value = d.value != null ? d.value : d.Value;
+            if (value == null || value === '' || !text) return;
+            if (allowed && allowed.indexOf(normalizeName(text)) === -1) return;
+            districtEl.appendChild(new Option(text, value));
+        });
+
+        if (keepValue && districtEl.querySelector('option[value="' + keepValue + '"]')) {
+            districtEl.value = keepValue;
+        }
+    }
+
+    if (regionEl && districtEl) {
+        regionEl.addEventListener('change', function () {
+            var rid = this.value;
+            if (!rid) {
+                districtEl.innerHTML = '<option value="">— Все —</option>';
+                return;
+            }
+            fetch(getDistrictsUrl + '?regionId=' + encodeURIComponent(rid))
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    renderDistrictOptions(data || [], '');
+                });
+        });
+
+        if (regionEl.value) {
+            fetch(getDistrictsUrl + '?regionId=' + encodeURIComponent(regionEl.value))
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    renderDistrictOptions(data || [], selectedDistrictOnLoad);
+                });
+        }
+    }
+
+    var subtypesBox = document.getElementById('report-subtypes');
+    var subPlaceholder = document.getElementById('report-subtypes-placeholder');
+    var typeChecks = document.querySelectorAll('.js-report-type');
+
+    function setSubtypeBulkButtonsVisible(show) {
+        var sb = document.getElementById('report-subtype-buttons');
+        if (!sb) return;
+        if (show) {
+            sb.classList.remove('d-none');
+            sb.classList.add('d-inline-flex');
+        } else {
+            sb.classList.add('d-none');
+            sb.classList.remove('d-inline-flex');
+        }
+    }
+
+    var btnTypesAll = document.getElementById('btn-report-types-all');
+    if (btnTypesAll) btnTypesAll.addEventListener('click', function () {
+        typeChecks.forEach(function (cb) { cb.checked = true; });
+        loadSubtypes();
+    });
+    var btnTypesNone = document.getElementById('btn-report-types-none');
+    if (btnTypesNone) btnTypesNone.addEventListener('click', function () {
+        typeChecks.forEach(function (cb) { cb.checked = false; });
+        loadSubtypes();
+    });
+    var btnSubAll = document.getElementById('btn-report-subtypes-all');
+    if (btnSubAll) btnSubAll.addEventListener('click', function () {
+        if (!subtypesBox) return;
+        subtypesBox.querySelectorAll('input[name="ReportSubtypeTags"]').forEach(function (c) { c.checked = true; });
+    });
+    var btnSubNone = document.getElementById('btn-report-subtypes-none');
+    if (btnSubNone) btnSubNone.addEventListener('click', function () {
+        if (!subtypesBox) return;
+        subtypesBox.querySelectorAll('input[name="ReportSubtypeTags"]').forEach(function (c) { c.checked = false; });
+    });
+
+    function selectedTypeCodes() {
+        var codes = [];
+        typeChecks.forEach(function (cb) { if (cb.checked) codes.push(cb.value); });
+        return codes;
+    }
+
+    function loadSubtypes() {
+        var codes = selectedTypeCodes();
+        if (!subtypesBox) return;
+        setSubtypeBulkButtonsVisible(false);
+        subtypesBox.querySelectorAll('.js-subtype-group').forEach(function (n) { n.remove(); });
+        if (subPlaceholder) subPlaceholder.style.display = codes.length ? 'none' : '';
+
+        if (codes.length === 0) {
+            if (subPlaceholder) subPlaceholder.textContent = 'Отметьте тип объекта, чтобы загрузить подтипы.';
+            return;
+        }
+
+        var qs = codes.map(function (c) { return 'types=' + encodeURIComponent(c); }).join('&');
+        fetch(getSubtypesUrl + '?' + qs)
+            .then(function (r) { return r.json(); })
+            .then(function (rows) {
+                if (!rows || !rows.length) {
+                    if (subPlaceholder) {
+                        subPlaceholder.style.display = '';
+                        subPlaceholder.textContent = 'Для выбранных типов подтипы не найдены.';
+                    }
+                    setSubtypeBulkButtonsVisible(false);
+                    return;
+                }
+                if (subPlaceholder) subPlaceholder.style.display = 'none';
+                var byType = {};
+                rows.forEach(function (row) {
+                    var tc = row.typeCode || '';
+                    if (!byType[tc]) byType[tc] = [];
+                    byType[tc].push(row);
+                });
+                Object.keys(byType).sort().forEach(function (tc) {
+                    var wrap = document.createElement('div');
+                    wrap.className = 'col-12 js-subtype-group';
+                    var title = document.createElement('div');
+                    title.className = 'fw-semibold small mb-2';
+                    title.textContent = 'Подтипы: ' + tc;
+                    var inner = document.createElement('div');
+                    inner.className = 'd-flex flex-wrap gap-2';
+                    byType[tc].forEach(function (row, idx) {
+                        var id = 'st_' + tc + '_' + idx;
+                        var div = document.createElement('div');
+                        div.className = 'form-check form-check-inline';
+                        var inp = document.createElement('input');
+                        inp.className = 'form-check-input';
+                        inp.type = 'checkbox';
+                        inp.name = 'ReportSubtypeTags';
+                        inp.id = id;
+                        inp.value = row.value || '';
+                        if (preselectedReportSubtypes && preselectedReportSubtypes.indexOf(row.value) >= 0)
+                            inp.checked = true;
+                        var lab = document.createElement('label');
+                        lab.className = 'form-check-label small';
+                        lab.htmlFor = id;
+                        lab.textContent = row.text || '';
+                        div.appendChild(inp);
+                        div.appendChild(lab);
+                        inner.appendChild(div);
+                    });
+                    wrap.appendChild(title);
+                    wrap.appendChild(inner);
+                    subtypesBox.appendChild(wrap);
+                });
+                setSubtypeBulkButtonsVisible(true);
+            })
+            .catch(function () {
+                setSubtypeBulkButtonsVisible(false);
+                if (subPlaceholder) {
+                    subPlaceholder.style.display = '';
+                    subPlaceholder.textContent = 'Не удалось загрузить подтипы.';
+                }
+            });
+    }
+
+    typeChecks.forEach(function (cb) {
+        cb.addEventListener('change', function () { loadSubtypes(); });
+    });
+    if (selectedTypeCodes().length) loadSubtypes();
+})();
+
+(function () {
+    var criteriaForm = document.getElementById('criteriaForm');
+    var refForm = document.getElementById('refForm');
+    if (!criteriaForm || !refForm) return;
+
+    function fillRefReportParams() {
+        var box = document.getElementById('refReportParams');
+        if (!box) return;
+        box.innerHTML = '';
+        criteriaForm.querySelectorAll('input[name="ReportObjectTypes"]:checked').forEach(function (cb) {
+            var inp = document.createElement('input');
+            inp.type = 'hidden';
+            inp.name = 'ReportObjectTypes';
+            inp.value = cb.value;
+            box.appendChild(inp);
+        });
+        criteriaForm.querySelectorAll('input[name="ReportSubtypeTags"]:checked').forEach(function (cb) {
+            var inp = document.createElement('input');
+            inp.type = 'hidden';
+            inp.name = 'ReportSubtypeTags';
+            inp.value = cb.value;
+            box.appendChild(inp);
+        });
+        var exSel = document.getElementById('ReportExistence');
+        var refEx = document.getElementById('refReportExistence');
+        if (exSel && refEx) refEx.value = exSel.value || 'exists';
+    }
+
+    function syncBaseHiddenFields() {
+        var names = [
+            'SearchQuery', 'RegionId', 'DistrictId',
+            'CreatedFrom', 'CreatedTo',
+            'FoundationYearFrom', 'FoundationYearTo',
+            'MinPopulation', 'MaxPopulation',
+            'SortBy'
+        ];
+        names.forEach(function (name) {
+            var src = criteriaForm.querySelector('[name="' + name + '"]');
+            var dst = refForm.querySelector('[name="' + name + '"]');
+            if (!dst) return;
+            dst.value = src ? (src.value || '') : '';
+        });
+    }
+
+    refForm.addEventListener('submit', function () {
+        syncBaseHiddenFields();
+        fillRefReportParams();
+    });
+})();
+</script>
+}

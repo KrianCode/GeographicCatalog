@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: geographiccatalog-db
+    environment:
+      POSTGRES_DB: geographiccatalog
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db/00-create-user.sql:/docker-entrypoint-initdb.d/00-create-user.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./init-db/02-rename-tables.sql:/docker-entrypoint-initdb.d/02-rename-tables.sql
+      - ./init-db/03-lowercase-columns.sql:/docker-entrypoint-initdb.d/03-lowercase-columns.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d geographiccatalog"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  geographiccatalog:
+    image: ${DOCKER_REGISTRY-}geographiccatalog
+    build:
+      context: .
+      dockerfile: GeographicCatalog/Dockerfile
+    environment:
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=geographiccatalog;Username=postgres;Password=postgres"
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

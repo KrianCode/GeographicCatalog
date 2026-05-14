@@ -1,0 +1,155 @@
+/**
+ * Версия для слабовидящих
+ * Включается переключателем и сохраняется в localStorage (gc-accessibility).
+ * Увеличивает размер шрифта, контраст и видимость фокуса.
+ */
+
+/* Базовые размеры и контраст */
+html[data-accessibility="on"] {
+    --a11y-font-scale: 1.2;
+    --a11y-text: #000000;
+    --a11y-bg: #ffffff;
+    --a11y-border: #000000;
+    --a11y-accent: #0000aa;
+    --a11y-focus-width: 3px;
+}
+
+html[data-accessibility="on"][data-theme="dark"] {
+    --a11y-text: #ffffff;
+    --a11y-bg: #0a0a0a;
+    --a11y-border: #ffffff;
+    --a11y-accent: #6eb3ff;
+}
+
+html[data-accessibility="on"] body {
+    font-size: calc(1rem * var(--a11y-font-scale));
+    line-height: 1.6;
+    color: var(--a11y-text) !important;
+    background-color: var(--a11y-bg) !important;
+}
+
+/* Заголовки крупнее */
+html[data-accessibility="on"] h1 { font-size: calc(1.75rem * var(--a11y-font-scale)); }
+html[data-accessibility="on"] h2 { font-size: calc(1.5rem * var(--a11y-font-scale)); }
+html[data-accessibility="on"] h3 { font-size: calc(1.25rem * var(--a11y-font-scale)); }
+html[data-accessibility="on"] h4, html[data-accessibility="on"] h5 { font-size: calc(1.125rem * var(--a11y-font-scale)); }
+
+/* Ссылки: контраст и подчёркивание */
+html[data-accessibility="on"] a {
+    color: var(--a11y-accent) !important;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+html[data-accessibility="on"] a:hover {
+    text-decoration-thickness: 2px;
+}
+
+/* Чёткая видимость фокуса (клавиатурная навигация) */
+html[data-accessibility="on"] *:focus {
+    outline: var(--a11y-focus-width) solid var(--a11y-accent) !important;
+    outline-offset: 2px;
+}
+html[data-accessibility="on"] *:focus:not(:focus-visible) {
+    outline: none !important;
+}
+html[data-accessibility="on"] *:focus-visible {
+    outline: var(--a11y-focus-width) solid var(--a11y-accent) !important;
+    outline-offset: 2px;
+}
+
+/* Кнопки и инпуты: крупнее, контрастная обводка */
+html[data-accessibility="on"] button,
+html[data-accessibility="on"] input,
+html[data-accessibility="on"] select,
+html[data-accessibility="on"] textarea {
+    font-size: calc(1rem * var(--a11y-font-scale)) !important;
+    min-height: 2.5rem;
+    border: 2px solid var(--a11y-border) !important;
+    color: var(--a11y-text) !important;
+    background-color: var(--a11y-bg) !important;
+}
+html[data-accessibility="on"] .form-control,
+html[data-accessibility="on"] .form-select {
+    font-size: calc(1rem * var(--a11y-font-scale)) !important;
+    min-height: 2.5rem;
+    border-width: 2px !important;
+}
+
+/* Карточки и панели: контрастные границы */
+html[data-accessibility="on"] .card,
+html[data-accessibility="on"] .info-card,
+html[data-accessibility="on"] .content-card,
+html[data-accessibility="on"] .panel-card,
+html[data-accessibility="on"] .module-panel,
+html[data-accessibility="on"] .details-hero,
+html[data-accessibility="on"] .stat-card,
+html[data-accessibility="on"] .nav-card,
+html[data-accessibility="on"] [class*="card"] {
+    border: 2px solid var(--a11y-border) !important;
+    background-color: var(--a11y-bg) !important;
+    color: var(--a11y-text) !important;
+}
+
+/* Таблицы */
+html[data-accessibility="on"] table,
+html[data-accessibility="on"] .table th,
+html[data-accessibility="on"] .table td {
+    border: 2px solid var(--a11y-border) !important;
+    font-size: calc(0.95rem * var(--a11y-font-scale));
+}
+html[data-accessibility="on"] .table th {
+    background-color: var(--a11y-bg) !important;
+    color: var(--a11y-text) !important;
+}
+
+/* Навбар: сохраняем читаемость */
+html[data-accessibility="on"] .navbar-enterprise .nav-link {
+    font-size: calc(0.95rem * var(--a11y-font-scale)) !important;
+    padding: 0.75rem 1rem !important;
+}
+html[data-accessibility="on"] .navbar-brand {
+    font-size: calc(1.1rem * var(--a11y-font-scale));
+}
+
+/* Мелкий текст не меньше базового масштаба */
+html[data-accessibility="on"] .small,
+html[data-accessibility="on"] small {
+    font-size: calc(0.875rem * var(--a11y-font-scale)) !important;
+}
+html[data-accessibility="on"] .text-muted {
+    color: var(--a11y-text) !important;
+    opacity: 0.85;
+}
+
+/* Алерты */
+html[data-accessibility="on"] .alert {
+    border-width: 2px !important;
+    font-size: calc(1rem * var(--a11y-font-scale));
+}
+
+/* Кнопка переключения режима в шапке */
+.a11y-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.4);
+    background: transparent;
+    color: #e5e7eb;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+.a11y-toggle-btn:hover {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.6);
+    color: #fff;
+}
+.a11y-toggle-btn.active {
+    background: rgba(59, 130, 246, 0.5);
+    border-color: #93c5fd;
+    color: #fff;
+}

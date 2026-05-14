@@ -1,0 +1,198 @@
+@model GeographicCatalog.Models.AdminEditAteViewModel
+@{
+    ViewData["Title"] = ViewBag.Title ?? "Населённый пункт";
+    var regions = ViewBag.Regions as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+    var districts = ViewBag.Districts as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+    var ateTypes = ViewBag.AteTypes as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+    var isCreate = Model.Id == 0;
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">Админ-панель</a></li>
+        <li class="breadcrumb-item"><a asp-action="ListAte">Населенные пункты</a></li>
+        <li class="breadcrumb-item active">@(isCreate ? "Создание" : "Редактирование")</li>
+    </ol>
+</nav>
+
+<h2 class="h4 mb-4" style="color: var(--text-body);">@ViewBag.Title</h2>
+
+<form method="post" asp-action="@(isCreate ? "CreateAte" : "EditAte")" asp-route-id="@(isCreate ? (int?)null : Model.Id)" id="form-ate">
+    @Html.AntiForgeryToken()
+    @if (!isCreate) { <input type="hidden" asp-for="Id" /> }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-3 mb-3" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                <div class="card-header" style="background-color: var(--bg-body); border-bottom: 1px solid var(--border-color);"><strong>Названия</strong></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="NAMERUS" class="form-label"></label>
+                            <input asp-for="NAMERUS" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="NAMEBEL" class="form-label"></label>
+                            <input asp-for="NAMEBEL" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="NAMELAT" class="form-label"></label>
+                            <input asp-for="NAMELAT" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="NOMENKLAT" class="form-label"></label>
+                            <input asp-for="NOMENKLAT" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="UDARRUS" class="form-label"></label>
+                            <input asp-for="UDARRUS" class="form-control" placeholder="Ударение" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="UDARBEL" class="form-label"></label>
+                            <input asp-for="UDARBEL" class="form-control" placeholder="Націск" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-3 mb-3" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                <div class="card-header" style="background-color: var(--bg-body); border-bottom: 1px solid var(--border-color);"><strong>Территория и классификация</strong></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="RegionId" class="form-label"></label>
+                            <select asp-for="RegionId" class="form-select" id="ate-region">
+                                <option value="">— Выберите —</option>
+                                @foreach (var r in regions)
+                                {
+                                    var isSelectedRegion = Model.RegionId?.ToString() == r.Value;
+                                    <option value="@r.Value" selected="@isSelectedRegion">@r.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="DistrictId" class="form-label"></label>
+                            <select asp-for="DistrictId" class="form-select" id="ate-district">
+                                <option value="">— Выберите —</option>
+                                @foreach (var d in districts)
+                                {
+                                    var isSelectedDistrict = Model.DistrictId?.ToString() == d.Value;
+                                    <option value="@d.Value" selected="@isSelectedDistrict">@d.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="SOVET" class="form-label"></label>
+                            <input asp-for="SOVET" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="CategoryId" class="form-label"></label>
+                            <select asp-for="CategoryId" class="form-select">
+                                <option value="">— Выберите —</option>
+                                @foreach (var t in ateTypes)
+                                {
+                                    var isSelectedType = Model.CategoryId?.ToString() == t.Value;
+                                    <option value="@t.Value" selected="@isSelectedType">@t.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="SOATO" class="form-label"></label>
+                            <input asp-for="SOATO" class="form-control" type="number" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-3 mb-3" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                <div class="card-header" style="background-color: var(--bg-body); border-bottom: 1px solid var(--border-color);"><strong>Координаты (WGS-84)</strong></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Y_WGS" class="form-label"></label>
+                            <input asp-for="Y_WGS" class="form-control" type="number" step="any" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="X_WGS" class="form-label"></label>
+                            <input asp-for="X_WGS" class="form-control" type="number" step="any" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-3 mb-3" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                <div class="card-header" style="background-color: var(--bg-body); border-bottom: 1px solid var(--border-color);"><strong>Дата и статус</strong></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="DATEREG" class="form-label"></label>
+                            <input asp-for="DATEREG" class="form-control" type="date" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="EXISTENCE" class="form-label"></label>
+                            <input asp-for="EXISTENCE" class="form-control" placeholder="напр. существует" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-3 mb-3" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                <div class="card-header" style="background-color: var(--bg-body); border-bottom: 1px solid var(--border-color);"><strong>Справки</strong></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label asp-for="SINFORUS" class="form-label"></label>
+                            <textarea asp-for="SINFORUS" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="SINFOBEL" class="form-label"></label>
+                            <textarea asp-for="SINFOBEL" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="DescriptionRu" class="form-label"></label>
+                            <textarea asp-for="DescriptionRu" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-3 sticky-top" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                <div class="card-body">
+                    <button type="submit" class="btn btn-primary w-100 mb-2"><i class="bi bi-check-lg me-1"></i> Сохранить</button>
+                    <a asp-action="ListAte" class="btn btn-outline-secondary w-100">Отмена</a>
+                    @if (!isCreate)
+                    {
+                        <hr />
+                        <a asp-controller="Catalog" asp-action="DetailsATE" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary w-100" target="_blank">Открыть в каталоге</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+(function() {
+    var getDistrictsUrl = '@Url.Action("GetDistrictsForAdmin", "Admin")';
+    document.getElementById('ate-region').addEventListener('change', function() {
+        var rid = this.value;
+        var dest = document.getElementById('ate-district');
+        dest.innerHTML = '<option value="">— Выберите —</option>';
+        if (!rid) return;
+        fetch(getDistrictsUrl + '?regionId=' + encodeURIComponent(rid))
+            .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            .then(function(data) {
+                (data || []).forEach(function(d) {
+                    var t = (d.text != null ? d.text : d.Text) || '';
+                    var v = d.value != null ? d.value : d.Value;
+                    if (v == null || v === '') return;
+                    dest.appendChild(new Option(String(t), String(v)));
+                });
+            })
+            .catch(function() { /* остаётся только «— Выберите —» */ });
+    });
+})();
+</script>
+}

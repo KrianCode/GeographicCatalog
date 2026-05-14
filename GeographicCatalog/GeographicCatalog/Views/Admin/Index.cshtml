@@ -1,0 +1,304 @@
+@model GeographicCatalog.Models.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Панель управления";
+}
+
+<div class="admin-container">
+    <!-- Шапка -->
+    <div class="admin-header">
+        <div class="header-content">
+            <h1 class="page-title">Панель управления</h1>
+            <p class="page-subtitle">Сводка по базе данных географического каталога</p>
+        </div>
+        <div class="header-actions">
+            <a asp-controller="Catalog" asp-action="Index" class="btn-system btn-system-outline">
+                <i class="bi bi-box-arrow-up-right me-2"></i>Открыть каталог
+            </a>
+            <a asp-controller="Admin" asp-action="Reports" class="btn-system btn-system-primary ms-2">
+                <i class="bi bi-clipboard-data me-2"></i>Отчеты
+            </a>
+        </div>
+    </div>
+
+    <!-- Главный KPI -->
+    <div class="kpi-banner mb-4">
+        <div class="kpi-label">Всего записей в системе</div>
+        <div class="kpi-value">@Model.TotalCount</div>
+    </div>
+
+    <h2 class="section-title">Управление разделами</h2>
+
+    <!-- Сетка разделов -->
+    <div class="row g-3">
+        <!-- Населенные пункты -->
+        <div class="col-12 col-xl-6">
+            <div class="module-panel">
+                <div class="module-info">
+                    <div class="module-icon">
+                        <i class="bi bi-geo-alt"></i>
+                    </div>
+                    <div class="module-text">
+                        <h3 class="module-name">Населенные пункты</h3>
+                        <div class="module-stats">
+                            <span class="stat-number">@Model.AteCount</span>
+                            <span class="stat-label">объектов</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="module-actions">
+                    <a asp-action="ListAte" class="btn-system btn-system-secondary">Список</a>
+                    <a asp-action="CreateAte" class="btn-system btn-system-primary">Добавить</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Аэропорты -->
+        <div class="col-12 col-xl-6">
+            <div class="module-panel">
+                <div class="module-info">
+                    <div class="module-icon">
+                        <i class="bi bi-airplane"></i>
+                    </div>
+                    <div class="module-text">
+                        <h3 class="module-name">Аэропорты</h3>
+                        <div class="module-stats">
+                            <span class="stat-number">@Model.AirportsCount</span>
+                            <span class="stat-label">объектов</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="module-actions">
+                    <a asp-action="ListAirports" class="btn-system btn-system-secondary">Список</a>
+                    <a asp-action="CreateAirport" class="btn-system btn-system-primary">Добавить</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ж/Д объекты -->
+        <div class="col-12 col-xl-6">
+            <div class="module-panel">
+                <div class="module-info">
+                    <div class="module-icon">
+                        <i class="bi bi-train-front"></i>
+                    </div>
+                    <div class="module-text">
+                        <h3 class="module-name">Железнодорожные объекты</h3>
+                        <div class="module-stats">
+                            <span class="stat-number">@Model.RailwayCount</span>
+                            <span class="stat-label">объектов</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="module-actions">
+                    <a asp-action="ListRailway" class="btn-system btn-system-secondary">Список</a>
+                    <a asp-action="CreateRailway" class="btn-system btn-system-primary">Добавить</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Физ.-гео. объекты -->
+        <div class="col-12 col-xl-6">
+            <div class="module-panel">
+                <div class="module-info">
+                    <div class="module-icon">
+                        <i class="bi bi-water"></i>
+                    </div>
+                    <div class="module-text">
+                        <h3 class="module-name">Физ.-геогр. объекты</h3>
+                        <div class="module-stats">
+                            <span class="stat-number">@Model.FgoCount</span>
+                            <span class="stat-label">объектов</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="module-actions">
+                    <a asp-action="ListFgo" class="btn-system btn-system-secondary">Список</a>
+                    <a asp-action="CreateFgo" class="btn-system btn-system-primary">Добавить</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Базовые настройки для строгого вида */
+    .admin-container {
+        max-width: 1200px;
+        color: var(--text-body);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* Шапка */
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 1.5rem;
+    }
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-body);
+        margin: 0 0 0.25rem 0;
+    }
+    .page-subtitle {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* Главный KPI баннер */
+    .kpi-banner {
+        background-color: var(--bg-body);
+        border: 1px solid var(--border-color);
+        border-left: 4px solid var(--accent-color);
+        padding: 1rem 1.5rem;
+        border-radius: 4px;
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+    }
+    .kpi-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .kpi-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-body);
+    }
+
+    .section-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-body);
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+
+    /* Панели модулей (вместо карточек) */
+    .module-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--bg-body);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 1.25rem;
+        transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+    .module-panel:hover {
+        border-color: var(--accent-color);
+        background-color: rgba(37,99,235,0.08);
+    }
+
+    .module-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .module-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(148,163,184,0.15);
+        color: var(--text-body);
+        border-radius: 4px;
+        font-size: 1.25rem;
+        border: 1px solid var(--border-color);
+    }
+    .module-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-body);
+        margin: 0 0 0.125rem 0;
+    }
+    .module-stats {
+        display: flex;
+        align-items: baseline;
+        gap: 0.25rem;
+    }
+    .stat-number {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-body);
+    }
+    .stat-label {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+    }
+
+    /* Системные кнопки */
+    .module-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    .btn-system {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: all 0.15s ease;
+        cursor: pointer;
+    }
+    .btn-system-secondary {
+        background-color: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-body);
+    }
+    .btn-system-secondary:hover {
+        background-color: rgba(148,163,184,0.15);
+        color: var(--text-body);
+    }
+    .btn-system-primary {
+        background-color: var(--accent-color);
+        border: 1px solid var(--accent-color);
+        color: #ffffff;
+    }
+    .btn-system-primary:hover {
+        background-color: #1d4ed8;
+        border-color: #1d4ed8;
+        color: #ffffff;
+    }
+    .btn-system-outline {
+        background-color: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-body);
+    }
+    .btn-system-outline:hover {
+        background-color: rgba(148,163,184,0.15);
+        color: var(--text-body);
+    }
+
+    /* Адаптивность для мобильных */
+    @@media (max-width: 576px) {
+        .module-panel {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .module-actions {
+            width: 100%;
+        }
+        .btn-system {
+            flex: 1;
+        }
+        .admin-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+    }
+</style>

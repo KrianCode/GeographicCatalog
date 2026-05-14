@@ -1,0 +1,292 @@
+@model GeographicCatalog.Models.AdminListViewModel
+@{
+    ViewData["Title"] = Model.Title + " — Админ";
+    var regions = ViewBag.Regions as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+    var districts = ViewBag.Districts as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+    
+    string detailsAction = Model.ObjectType switch
+    {
+        "ATE" => "DetailsATE",
+        "AIR" => "DetailsAirport",
+        "RW" => "DetailsRailway",
+        "FGO" => "DetailsPhysicalGeo",
+        _ => "Index"
+    };
+    string detailsController = "Catalog";
+    string editAction = Model.ObjectType switch { "ATE" => "EditAte", "AIR" => "EditAirport", "RW" => "EditRailway", "FGO" => "EditFgo", _ => "Index" };
+    string createAction = Model.ObjectType switch { "ATE" => "CreateAte", "AIR" => "CreateAirport", "RW" => "CreateRailway", "FGO" => "CreateFgo", _ => "Index" };
+    string deleteAction = Model.ObjectType switch { "ATE" => "DeleteAte", "AIR" => "DeleteAirport", "RW" => "DeleteRailway", "FGO" => "DeleteFgo", _ => "Index" };
+}
+
+<style>
+    /* Исправление темной темы для админ-панели */
+    html[data-theme="dark"] .admin-list .card {
+        background-color: var(--color-bg-elevated) !important;
+        border-color: var(--color-border-soft) !important;
+        color: var(--color-text);
+    }
+
+    html[data-theme="dark"] .admin-list .table {
+        color: var(--color-text) !important;
+        background-color: transparent !important;
+    }
+
+    html[data-theme="dark"] .admin-list .table thead th {
+        background-color: var(--color-bg-elevated) !important;
+        border-bottom-color: var(--color-border-strong) !important;
+        color: var(--color-text-muted) !important;
+    }
+
+    html[data-theme="dark"] .admin-list .table tbody tr {
+        background-color: transparent !important;
+        border-bottom-color: var(--color-border-soft) !important;
+    }
+
+    html[data-theme="dark"] .admin-list .table tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    html[data-theme="dark"] .admin-list .table td {
+        color: var(--color-text) !important;
+        border-color: var(--color-border-soft) !important;
+        background-color: transparent !important;
+    }
+
+    html[data-theme="dark"] .admin-list .form-control,
+    html[data-theme="dark"] .admin-list .form-select {
+        background-color: var(--color-input-bg) !important;
+        border-color: var(--color-input-border) !important;
+        color: var(--color-text) !important;
+    }
+    
+    html[data-theme="dark"] .admin-list .form-control::placeholder {
+        color: var(--color-text-muted) !important;
+    }
+
+    html[data-theme="dark"] .admin-list .pagination .page-link {
+        background-color: var(--color-bg-elevated) !important;
+        border-color: var(--color-border-soft) !important;
+        color: var(--color-text) !important;
+    }
+
+    html[data-theme="dark"] .admin-list .pagination .page-item.disabled .page-link {
+        background-color: var(--color-bg-elevated) !important;
+        border-color: var(--color-border-soft) !important;
+        color: var(--color-text-muted) !important;
+    }
+    
+    html[data-theme="dark"] .admin-list .pagination .page-link:hover {
+        background-color: var(--color-border-soft) !important;
+        color: var(--color-text) !important;
+    }
+
+    html[data-theme="dark"] .admin-list .card-header {
+        background-color: var(--color-bg-elevated) !important;
+        border-bottom-color: var(--color-border-strong) !important;
+        color: var(--color-text);
+    }
+
+    html[data-theme="dark"] .admin-list .badge {
+        color: #fff !important;
+    }
+
+    html[data-theme="dark"] .admin-list .text-muted {
+        color: var(--color-text-muted) !important;
+    }
+
+    html[data-theme="dark"] .admin-list .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+</style>
+
+<div class="admin-list">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" style="color: var(--primary-color);">Админ-панель</a></li>
+            <li class="breadcrumb-item active" aria-current="page" style="color: var(--color-text-muted);">@Model.Title</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <h1 class="h4 mb-0" style="color: var(--color-text);">@Model.Title</h1>
+        <div class="d-flex gap-2">
+            <a asp-action="@createAction" class="btn btn-success btn-sm"><i class="bi bi-plus-lg me-1"></i> Добавить</a>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i> Назад</a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-body">
+            <form method="get" asp-controller="Admin" asp-action="@(Model.ObjectType == "ATE" ? "ListAte" : Model.ObjectType == "AIR" ? "ListAirports" : Model.ObjectType == "RW" ? "ListRailway" : "ListFgo")" class="row g-3 align-items-end" id="admin-list-filter-form">
+                <input type="hidden" name="page" value="1" />
+                <input type="hidden" name="regionId" id="list-region-hidden" value="@(Model.RegionId?.ToString() ?? "")" />
+                <input type="hidden" name="districtId" id="list-district-hidden" value="@(Model.DistrictId?.ToString() ?? "")" />
+                <div class="col-md-4">
+                    <label class="form-label small" style="color: var(--color-text-muted);">Поиск по названию</label>
+                    <input type="text" name="search" class="form-control" placeholder="Рус. или бел." value="@Model.Search" />
+                </div>
+<div class="col-md-3">
+    <label class="form-label small" style="color: var(--color-text-muted);">Область</label>
+    <select class="form-select" id="list-region">
+        <option value="">— Все —</option>
+        @foreach (var r in regions)
+        {
+            var isSelected = (Model.RegionId?.ToString() == r.Value) || 
+                           (ViewBag.RegionId?.ToString() == r.Value);
+            <option value="@r.Value" selected="@(isSelected ? "selected" : null)">@r.Text</option>
+        }
+    </select>
+</div>
+<div class="col-md-3">
+    <label class="form-label small" style="color: var(--color-text-muted);">Район</label>
+    <select class="form-select" id="list-district">
+        <option value="">— Все —</option>
+        @foreach (var d in districts)
+        {
+            var isSelected = (Model.DistrictId?.ToString() == d.Value) || 
+                           (ViewBag.DistrictId?.ToString() == d.Value);
+            <option value="@d.Value" selected="@(isSelected ? "selected" : null)">@d.Text</option>
+        }
+    </select>
+</div>
+                <div class="col-md-3">
+                    <label class="form-label small" style="color: var(--color-text-muted);">Сортировка</label>
+                    <select name="sortBy" class="form-select">
+                        <option value="" selected="@(string.IsNullOrEmpty(Model.SortBy))">По названию (А-Я)</option>
+                        <option value="name_desc" selected="@(Model.SortBy == "name_desc")">По названию (Я-А)</option>
+                        <option value="id_asc" selected="@(Model.SortBy == "id_asc")">По ID (возр.)</option>
+                        <option value="id_desc" selected="@(Model.SortBy == "id_desc")">По ID (убыв.)</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mt-auto">
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search me-1"></i> Найти</button>
+                </div>
+                <div class="col-md-2">
+                    <a asp-controller="Admin" asp-action="@(Model.ObjectType == "ATE" ? "ListAte" : Model.ObjectType == "AIR" ? "ListAirports" : Model.ObjectType == "RW" ? "ListRailway" : "ListFgo")" class="btn btn-outline-secondary w-100">Сбросить</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <span class="small" style="color: var(--color-text-muted);">Всего: <strong>@Model.TotalCount</strong></span>
+            @if (Model.TotalPages > 1)
+            {
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(Model.Page <= 1 ? "disabled" : "")">
+                            <a class="page-link" href="?page=@(Model.Page - 1)&search=@Model.Search&regionId=@Model.RegionId&districtId=@Model.DistrictId&sortBy=@Model.SortBy">Назад</a>
+                        </li>
+                        <li class="page-item disabled"><span class="page-link">@Model.Page из @Model.TotalPages</span></li>
+                        <li class="page-item @(Model.Page >= Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="?page=@(Model.Page + 1)&search=@Model.Search&regionId=@Model.RegionId&districtId=@Model.DistrictId&sortBy=@Model.SortBy">Вперёд</a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название (рус.)</th>
+                        <th>Название (бел.)</th>
+                        <th>Область</th>
+                        <th>Район</th>
+                        <th>Статус</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items?.Any() == true)
+                    {
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="text-muted">@item.Id</td>
+                                <td>@(item.NameRu ?? "—")</td>
+                                <td>@(item.NameBe ?? "—")</td>
+                                <td>@(item.RegionName ?? "—")</td>
+                                <td>@(item.DistrictName ?? "—")</td>
+                                <td><span class="badge bg-secondary">@(item.StatusName ?? "—")</span></td>
+                                <td class="text-nowrap">
+                                    <a asp-controller="Admin" asp-action="@editAction" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary me-1" title="Редактировать"><i class="bi bi-pencil"></i></a>
+                                    <a asp-controller="@detailsController" asp-action="@detailsAction" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1" target="_blank" title="В каталог"><i class="bi bi-box-arrow-up-right"></i></a>
+                                    
+                                    <form method="post" asp-controller="Admin" asp-action="@deleteAction" asp-route-id="@item.Id" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить эту запись? Это действие нельзя отменить.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Удалить"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">Записей не найдено</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function() {
+    var getDistrictsUrl = '@Url.Action("GetDistrictsForAdmin", "Admin")';
+    var formEl = document.getElementById('admin-list-filter-form');
+    var regionEl = document.getElementById('list-region');
+    var districtEl = document.getElementById('list-district');
+    var regionHidden = document.getElementById('list-region-hidden');
+    var districtHidden = document.getElementById('list-district-hidden');
+    if (!formEl || !regionEl || !districtEl || !regionHidden || !districtHidden) return;
+
+    function toIntString(value) {
+        var n = parseInt(value, 10);
+        return Number.isFinite(n) && n > 0 ? String(n) : '';
+    }
+
+    regionEl.addEventListener('change', function() {
+        var rid = this.value;
+        districtEl.innerHTML = '<option value="">— Все —</option>';
+        districtHidden.value = '';
+        if (!rid) return;
+        fetch(getDistrictsUrl + '?regionId=' + encodeURIComponent(rid))
+            .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
+            .then(function(data) {
+                (data || []).forEach(function(d) {
+                    var t = (d.text != null ? d.text : d.Text) || '';
+                    var v = d.value != null ? d.value : d.Value;
+                    if (v == null || v === '') return;
+                    districtEl.appendChild(new Option(String(t), String(v)));
+                });
+            })
+            .catch(function() {});
+    });
+
+    formEl.addEventListener('submit', function() {
+        regionHidden.value = toIntString(regionEl.value);
+        districtHidden.value = toIntString(districtEl.value);
+    });
+})();
+</script>
+}

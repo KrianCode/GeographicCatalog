@@ -1,0 +1,1164 @@
+@model GeographicCatalog.Models.SearchModel
+@{
+    ViewData["Title"] = "Поиск в каталоге";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+
+        /* --- Layout & Containers --- */
+        .catalog-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .panel-card {
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-body);
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-body {
+            padding: 1.5rem;
+        }
+
+        /* --- Hero Section --- */
+        .hero-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-body);
+            margin: 0;
+        }
+
+        .hero-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* --- Object Type Selectors --- */
+        .object-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .type-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-body);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            height: 100%;
+        }
+
+            .type-btn:hover {
+                border-color: var(--accent-color);
+                background-color: var(--bg-body);
+                color: var(--text-body);
+            }
+
+            .type-btn.active {
+                border-color: var(--accent-color);
+                background-color: rgba(37,99,235,0.1);
+                color: var(--accent-color);
+                box-shadow: 0 0 0 1px var(--accent-color);
+            }
+
+            .type-btn i {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .type-btn span {
+                font-size: 0.85rem;
+                font-weight: 500;
+            }
+
+        /* --- Search Input --- */
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+            .search-input:focus {
+                outline: none;
+                border-color: var(--accent-color);
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+            }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .search-actions {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* --- Buttons --- */
+        .btn-custom {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .btn-primary-custom {
+            background-color: var(--primary-dark);
+            color: #fff;
+        }
+
+            .btn-primary-custom:hover {
+                background-color: var(--accent-color);
+                color: #fff;
+            }
+
+        .btn-outline-custom {
+            border-color: var(--border-color);
+            background: transparent;
+            color: var(--text-muted);
+        }
+
+            .btn-outline-custom:hover {
+                border-color: var(--text-muted);
+                color: var(--text-body);
+            }
+
+        .btn-toggle-filters {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+            .btn-toggle-filters:hover, .btn-toggle-filters.active {
+                background: rgba(148,163,184,0.12);
+                color: var(--text-body);
+                border-color: var(--border-color);
+            }
+
+        /* --- Alphabet --- */
+        .alphabet-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        .alpha-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .alpha-btn:hover {
+                border-color: var(--accent-color);
+                color: var(--accent-color);
+            }
+
+            .alpha-btn.active {
+                background-color: var(--accent-color);
+                color: #fff;
+                border-color: var(--accent-color);
+            }
+
+        /* --- Advanced Filters --- */
+        #advancedFilters {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .filters-section {
+            background: rgba(148,163,184,0.08);
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+
+        .filter-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-select-custom, .form-control-custom {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+            .form-select-custom:focus, .form-control-custom:focus {
+                border-color: var(--accent-color);
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+            }
+
+        /* --- Results Table --- */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .table-custom th {
+            background: var(--bg-body);
+            color: var(--text-muted);
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.75rem;
+                letter-spacing: 0.05em;
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid var(--border-color);
+                text-align: left;
+            }
+
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+            th.sortable:hover {
+                background-color: #e2e8f0;
+                color: var(--primary-color);
+            }
+
+        .sort-icon {
+            font-size: 0.75rem;
+            margin-left: 5px;
+            opacity: 0.3;
+        }
+
+        th.sortable.asc .sort-icon, th.sortable.desc .sort-icon {
+            opacity: 1;
+            color: var(--accent-color);
+        }
+
+            th.sortable.asc .sort-icon::before {
+                content: "\F124";
+            }
+
+            th.sortable.desc .sort-icon::before {
+                content: "\F145";
+            }
+
+        .table-custom td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-body);
+            vertical-align: middle;
+        }
+
+        .table-custom tr:hover td {
+            background-color: rgba(148,163,184,0.08);
+        }
+
+        .table-custom tr.selected td {
+            background-color: rgba(37,99,235,0.1);
+        }
+
+        /* --- Badges --- */
+        .badge-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+
+        .badge-ate {
+            background: rgba(37,99,235,0.15);
+            color: #bfdbfe;
+            border-color: rgba(37,99,235,0.4);
+        }
+
+        .badge-air {
+            background: rgba(16,185,129,0.15);
+            color: #bbf7d0;
+            border-color: rgba(16,185,129,0.4);
+        }
+
+        .badge-rw {
+            background: rgba(245,158,11,0.15);
+            color: #fed7aa;
+            border-color: rgba(245,158,11,0.4);
+        }
+
+        .badge-fgo {
+            background: rgba(6,182,212,0.15);
+            color: #a5f3fc;
+            border-color: rgba(6,182,212,0.4);
+        }
+
+        /* --- Map --- */
+        .map-container {
+            height: 400px;
+            background: var(--bg-body);
+            position: relative;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .map-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        /* --- Pagination --- */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.25rem;
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .page-link-custom {
+            min-width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .page-link-custom:hover {
+                background: rgba(148,163,184,0.12);
+                color: var(--text-body);
+            }
+
+            .page-link-custom.active {
+                background: var(--accent-color);
+                color: #fff;
+                border-color: var(--accent-color);
+            }
+
+        /* --- Loading --- */
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(15,23,42,0.6);
+            z-index: 10;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @@keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* --- Filter Badge --- */
+        .filter-badge {
+            background: #ef4444;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0 5px;
+            border-radius: 10px;
+            margin-left: 5px;
+        }
+
+        @@media (max-width: 768px) {
+            .map-container {
+                height: 300px;
+            }
+        }
+    </style>
+}
+
+<div class="catalog-container px-4 py-4">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="hero-title">Поиск в каталоге</h1>
+            <p class="hero-subtitle">Реестр географических наименований</p>
+        </div>
+    </div>
+
+    <!-- Search Panel -->
+    <div class="panel-card">
+        <div class="panel-header">
+            <h5 class="panel-title"><i class="bi bi-sliders"></i> Параметры поиска</h5>
+            <button type="button" class="btn-toggle-filters" id="toggleAdvancedFilters">
+                <i class="bi bi-filter"></i> Расширенные фильтры
+                <span class="filter-badge" id="filterCountBadge" style="display: none;">0</span>
+            </button>
+        </div>
+        <div class="panel-body position-relative">
+            <div class="loading-overlay" id="loadingSpinner">
+                <div class="spinner"></div>
+            </div>
+
+            <form id="searchForm">
+                <input type="hidden" name="ObjectType" value="@Model.ObjectType" id="objectTypeInput" />
+                <input type="hidden" name="FirstLetter" value="@Model.FirstLetter" id="firstLetterInput" />
+                <input type="hidden" name="Page" value="@Model.Page" id="pageInput" />
+                <input type="hidden" name="PageSize" value="@Model.PageSize" />
+
+                <!-- Object Types -->
+                <div class="object-type-grid">
+                    @foreach (var type in Model.ObjectTypes)
+                    {
+                        <div class="type-btn @(Model.ObjectType == type.Key ? "active" : "")" data-value="@type.Key">
+                            <i class="bi @(GetObjectTypeIcon(type.Key))"></i>
+                            <span>@type.Value</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- Search Input -->
+                <div class="search-wrapper">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" class="search-input" name="SearchQuery" id="searchQuery"
+                           placeholder="Введите название объекта (рус/бел)..."
+                           value="@Model.SearchQuery" autocomplete="off" />
+                    <div class="search-actions">
+                        <button type="button" class="btn btn-sm btn-link text-secondary text-decoration-none" id="clearSearch">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary-custom" id="searchButton">
+                            Найти
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Alphabet -->
+                <div class="alphabet-grid">
+                    @foreach (var letter in Model.Alphabet)
+                    {
+                        <div class="alpha-btn @(Model.FirstLetter == letter ? "active" : "")" data-value="@letter">
+                            @letter
+                        </div>
+                    }
+                </div>
+
+                <!-- Advanced Filters -->
+                <div class="collapse" id="advancedFilters">
+                    <div class="filters-section">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="filter-label">Область</label>
+                                <select class="form-select-custom filter-change" name="RegionId" id="regionSelect">
+                                    <option value="">Все области</option>
+                                    @foreach (var region in ViewBag.Regions as List<SelectListItem>)
+                                    {
+                                        <option value="@region.Value" selected="@(Model.RegionId?.ToString() == region.Value)">@region.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="filter-label">Район</label>
+                                <select class="form-select-custom filter-change" name="DistrictId" id="districtSelect" disabled="@(!Model.RegionId.HasValue)">
+                                    <option value="">Все районы</option>
+                                    @if (Model.RegionId.HasValue && ViewBag.Districts != null)
+                                    {
+                                        @foreach (var district in ViewBag.Districts as List<SelectListItem>)
+                                        {
+                                            <option value="@district.Value" selected="@(Model.DistrictId?.ToString() == district.Value)">@district.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="filter-label">Год основания (с)</label>
+                                <input type="number" class="form-control-custom filter-change" id="yearFrom" name="FoundationYearFrom" value="@Model.FoundationYearFrom" placeholder="Например, 1900" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="filter-label">Сортировка</label>
+                                <input type="hidden" name="SortBy" id="sortByInput" value="@Model.SortBy" />
+                                <select class="form-select-custom" id="sortBySelect">
+                                    <option value="">По релевантности</option>
+                                    @foreach (var sortOption in ViewBag.SortOptions as List<SelectListItem>)
+                                    {
+                                        <option value="@sortOption.Value" selected="@(Model.SortBy == sortOption.Value)">@sortOption.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-3 pt-3 border-top border-light">
+                            <button type="button" class="btn btn-sm btn-outline-custom" id="resetFilters">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i> Сбросить фильтры
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results & Map Grid -->
+    <div class="row g-4">
+        <!-- Results List -->
+        <div class="col-lg-7">
+            <div class="panel-card h-100 d-flex flex-column">
+                <div class="panel-header">
+                    <h5 class="panel-title">
+                        <i class="bi bi-list-ul"></i> Результаты
+                        <span class="badge bg-light text-dark border ms-2">@Model.TotalCount</span>
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-custom" id="exportPdfBtn" title="Экспорт в PDF">
+                            <i class="bi bi-file-earmark-pdf"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-custom" id="refreshResults" title="Обновить">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="resultsContainer" class="flex-grow-1 d-flex flex-column">
+                    @if (Model.Results.Any())
+                    {
+                        <div class="table-container">
+                            <table class="table-custom">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40px;">
+                                            <input type="checkbox" id="selectAll" class="form-check-input" />
+                                        </th>
+                                        <th class="sortable" data-sort="name">
+                                            Наименование <i class="bi bi-arrow-down-up sort-icon"></i>
+                                        </th>
+                                        <th class="sortable" data-sort="type">
+                                            Тип <i class="bi bi-arrow-down-up sort-icon"></i>
+                                        </th>
+                                        <th class="sortable" data-sort="region">
+                                            Область <i class="bi bi-arrow-down-up sort-icon"></i>
+                                        </th>
+                                        <th class="sortable" data-sort="district">
+                                            Район <i class="bi bi-arrow-down-up sort-icon"></i>
+                                        </th>
+                                        <th class="text-end">Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Results)
+                                    {
+                                        <tr class="search-result-row">
+                                            <td>
+                                                <input type="checkbox" class="form-check-input row-checkbox"
+                                                       data-id="@item.ObjectId" data-type="@item.ObjectType" />
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">@item.NameRu</div>
+                                                @if (!string.IsNullOrEmpty(item.NameBe))
+                                                {
+                                                    <div class="small">@item.NameBe</div>
+                                                }
+                                            </td>
+                                            <td>
+                                                @{
+                                                    var badgeClass = item.ObjectType switch
+                                                    {
+                                                        "ATE" => "badge-ate",
+                                                        "AIR" => "badge-air",
+                                                        "RW" => "badge-rw",
+                                                        "FGO" => "badge-fgo",
+                                                        _ => "badge-ate"
+                                                    };
+                                                    var iconClass = GetObjectTypeIcon(item.ObjectType);
+                                                }
+                                                <span class="badge-type @badgeClass">
+                                                    <i class="bi @iconClass"></i> @item.TypeName
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="small">@item.RegionName</div>
+                                            </td>
+                                            <td>
+                                                <div class="small">@item.DistrictName</div>
+                                            </td>
+                                            <td class="text-end">
+                                                <div class="d-flex justify-content-end gap-1">
+                                                    @if (item.Latitude.HasValue && item.Longitude.HasValue)
+                                                    {
+                                                        <button class="btn btn-sm btn-outline-custom border-0 show-on-map-btn"
+                                                                data-object-type="@item.ObjectType"
+                                                                data-object-id="@item.ObjectId"
+                                                                data-name-ru="@item.NameRu"
+                                                                data-name-be="@item.NameBe"
+                                                                data-latitude="@item.Latitude"
+                                                                data-longitude="@item.Longitude"
+                                                                title="На карте">
+                                                            <i class="bi bi-geo-alt"></i>
+                                                        </button>
+                                                    }
+                                                    <a href="@Url.Action("Details", new { type = item.ObjectType, id = item.ObjectId })"
+                                                       class="btn btn-sm btn-outline-custom border-0" title="Подробнее">
+                                                        <i class="bi bi-chevron-right"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @if (Model.TotalPages > 1)
+                        {
+                            <div class="pagination-container mt-auto">
+                                @if (Model.Page > 1)
+                                {
+                                    <div class="page-link-custom page-link" data-page="@(Model.Page - 1)"><i class="bi bi-chevron-left"></i></div>
+                                }
+                                <div class="page-link-custom active">@Model.Page</div>
+                                @if (Model.Page < Model.TotalPages)
+                                {
+                                    <div class="page-link-custom page-link" data-page="@(Model.Page + 1)"><i class="bi bi-chevron-right"></i></div>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="p-5 text-center text-muted">
+                            <i class="bi bi-search display-4 mb-3 d-block opacity-25"></i>
+                            <p>Объекты не найдены. Попробуйте изменить параметры поиска.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Map -->
+        <div class="col-lg-5">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h5 class="panel-title"><i class="bi bi-map"></i> Карта</h5>
+                    <button class="btn btn-sm btn-outline-custom" id="fullscreenMap" title="На весь экран">
+                        <i class="bi bi-arrows-fullscreen"></i>
+                    </button>
+                </div>
+                <div id="mapContainer" class="map-container">
+                    <div class="map-placeholder">
+                        <i class="bi bi-geo-alt display-4 mb-3 text-secondary opacity-25"></i>
+                        <p>Выберите объект из списка для отображения</p>
+                        <button class="btn btn-primary-custom btn-sm mt-2" id="initMap">Загрузить карту</button>
+                    </div>
+                </div>
+                <div id="coordinatesInfo" class="p-3 border-top bg-light" style="display:none;">
+                    <small class="text-muted d-block mb-1">Выбранный объект:</small>
+                    <div id="coordinatesContent" class="fw-medium text-dark"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Actions Panel -->
+<div id="bulkOperations" class="position-fixed bottom-0 start-50 translate-middle-x mb-4 p-3 bg-white border rounded shadow-lg" style="display: none; z-index: 1000; min-width: 300px;">
+    <div class="d-flex align-items-center justify-content-between gap-4">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary rounded-pill" id="selectedCount">0</span>
+            <span class="small fw-medium">выбрано</span>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-danger" id="clearSelectionBtn">Сброс</button>
+            <button class="btn btn-sm btn-primary-custom" id="bulkExportBtn">
+                <i class="bi bi-file-earmark-pdf me-1"></i> Экспорт
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Fullscreen Map Modal -->
+<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mapModalLabel">
+                    <i class="bi bi-map me-2"></i>Карта (Полный экран)
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 position-relative">
+                <div id="modalMapContainer" style="width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        $(document).ready(function() {
+            let map = null;
+            let currentMarker = null;
+            let selectedObjects = [];
+            let debounceTimer;
+
+            // --- Filter Badge Logic ---
+            function updateFilterBadge() {
+                let count = 0;
+                if ($('#regionSelect').val()) count++;
+                if ($('#districtSelect').val()) count++;
+                if ($('#sortByInput').val()) count++;
+                if ($('#yearFrom').val()) count++;
+
+                const badge = $('#filterCountBadge');
+                const toggleBtn = $('#toggleAdvancedFilters');
+
+                if (count > 0) {
+                    badge.text(count).show();
+                    toggleBtn.addClass('active');
+                } else {
+                    badge.hide();
+                    toggleBtn.removeClass('active');
+                }
+            }
+
+            function showLoading() { $('#loadingSpinner').css('display', 'flex'); }
+            function hideLoading() { $('#loadingSpinner').hide(); }
+
+            function updateSearchResults(page = 1) {
+                $('#pageInput').val(page);
+                const searchData = $('#searchForm').serialize();
+                const baseUrl = '@Url.Action("Index", "Catalog")';
+                const newUrl = baseUrl + '?' + searchData;
+
+                showLoading();
+
+                $('#resultsContainer').load(newUrl + ' #resultsContainer > *', function(response, status, xhr) {
+                    if (status == "error") {
+                        alert("Ошибка загрузки данных");
+                    }
+                    hideLoading();
+                    clearSelection();
+                    updateSortIcons();
+                });
+            }
+
+            // --- Event Handlers ---
+            $('.type-btn').on('click', function() {
+                const value = $(this).data('value');
+                const currentValue = $('#objectTypeInput').val();
+
+                if (currentValue === value) {
+                    $('#objectTypeInput').val('');
+                    $(this).removeClass('active');
+                } else {
+                    $('#objectTypeInput').val(value);
+                    $('.type-btn').removeClass('active');
+                    $(this).addClass('active');
+                }
+                updateSearchResults(1);
+            });
+
+            $('.alpha-btn').on('click', function() {
+                const value = $(this).data('value');
+                const currentValue = $('#firstLetterInput').val();
+
+                if (currentValue === value) {
+                    $('#firstLetterInput').val('');
+                    $(this).removeClass('active');
+                } else {
+                    $('#firstLetterInput').val(value);
+                    $('.alpha-btn').removeClass('active');
+                    $(this).addClass('active');
+                }
+                updateSearchResults(1);
+            });
+
+            $('#searchButton').on('click', function() {
+                clearTimeout(debounceTimer);
+                updateSearchResults(1);
+            });
+
+            $('#searchQuery').on('input', function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function() {
+                    updateSearchResults(1);
+                }, 500);
+            });
+
+            $('.filter-change').on('change input', function() {
+                updateFilterBadge();
+                updateSearchResults(1);
+            });
+
+            $(document).on('click', '.page-link[data-page]', function() {
+                const page = $(this).data('page');
+                updateSearchResults(page);
+            });
+
+            $('#clearSearch').click(function() {
+                $('#searchQuery').val('');
+                updateSearchResults(1);
+            });
+
+            $('#resetFilters').click(function() {
+                $('#advancedFilters').find('input, select').val('');
+                $('#districtSelect').prop('disabled', true).empty().append('<option value="">Все районы</option>');
+                $('#pageInput').val(1);
+                $('#sortByInput').val('');
+                updateFilterBadge();
+                updateSearchResults(1);
+            });
+
+            $('#regionSelect').change(function() {
+                const regionId = $(this).val();
+                const $districtSelect = $('#districtSelect');
+                $districtSelect.prop('disabled', true).empty().append('<option value="">Все районы</option>');
+                if (regionId) {
+                    $.get('@Url.Action("GetDistrictsByRegion", "Catalog")', { regionId: regionId }, function(data) {
+                        $.each(data, function(index, item) {
+                            $districtSelect.append($('<option>', { value: item.value, text: item.text }));
+                        });
+                        $districtSelect.prop('disabled', false);
+                    });
+                }
+            });
+
+            $('#toggleAdvancedFilters').click(function() {
+                $('#advancedFilters').collapse('toggle');
+            });
+
+            // --- Sorting Logic ---
+            $(document).on('click', 'th.sortable', function() {
+                const sortKey = $(this).data('sort');
+                const currentSort = $('#sortByInput').val();
+
+                let newSort = sortKey + '_asc';
+                if (currentSort === sortKey + '_asc') {
+                    newSort = sortKey + '_desc';
+                }
+
+                $('#sortByInput').val(newSort);
+
+                const selectOption = $(`#sortBySelect option[value="${newSort}"]`);
+                if (selectOption.length > 0) {
+                    $('#sortBySelect').val(newSort);
+                } else {
+                    $('#sortBySelect').val('');
+                }
+
+                updateSearchResults(1);
+            });
+
+            $('#sortBySelect').change(function() {
+                const val = $(this).val();
+                $('#sortByInput').val(val);
+                updateSearchResults(1);
+            });
+
+            function updateSortIcons() {
+                const currentSort = $('#sortByInput').val();
+                $('th.sortable').removeClass('asc desc');
+                $('th.sortable .sort-icon').removeClass('bi-arrow-down bi-arrow-up').addClass('bi-arrow-down-up');
+
+                if (!currentSort) return;
+
+                const [key, direction] = currentSort.split('_');
+                const th = $(`th.sortable[data-sort="${key}"]`);
+
+                if (th.length) {
+                    th.addClass(direction);
+                    const icon = th.find('.sort-icon');
+                    icon.removeClass('bi-arrow-down-up');
+                    if (direction === 'asc') {
+                        icon.addClass('bi-arrow-down');
+                    } else {
+                        icon.addClass('bi-arrow-up');
+                    }
+                }
+            }
+
+            // --- Map Logic (Small Map) ---
+            function initMap() {
+                $('.map-placeholder').hide();
+                if (!map) {
+                    map = L.map('mapContainer').setView([53.9, 27.5667], 7);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap', maxZoom: 19
+                    }).addTo(map);
+                }
+            }
+            $('#initMap').click(initMap);
+
+            window.selectObject = function(objectType, objectId, nameRu, nameBe, latitude, longitude) {
+                if (!map) initMap();
+                if (currentMarker) map.removeLayer(currentMarker);
+
+                currentMarker = L.marker([latitude, longitude]).addTo(map)
+                    .bindPopup(`<b>${nameRu}</b><br>${nameBe || ''}`).openPopup();
+                map.setView([latitude, longitude], 12);
+
+                $('#coordinatesContent').html(`${nameRu} (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`);
+                $('#coordinatesInfo').show();
+            };
+
+            $(document).on('click', '.show-on-map-btn', function(event) {
+                event.stopPropagation();
+                const data = $(this).data();
+                selectObject(data.objectType, data.objectId, data.nameRu, data.nameBe, data.latitude, data.longitude);
+            });
+
+            // --- Fullscreen Map Logic (Modal) ---
+            let modalMap = null;
+            let modalMarker = null;
+
+            $('#fullscreenMap').click(function() {
+                // Если основная карта еще не инициализирована, инициализируем её
+                if (!map) {
+                    initMap();
+                }
+                $('#mapModal').modal('show');
+            });
+
+            const mapModalEl = document.getElementById('mapModal');
+            mapModalEl.addEventListener('shown.bs.modal', function () {
+                // 1. Инициализируем карту в модальном окне, если её нет
+                if (!modalMap) {
+                    modalMap = L.map('modalMapContainer');
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap', maxZoom: 19
+                    }).addTo(modalMap);
+                }
+
+                // 2. Синхронизируем центр и зум с маленькой карты
+                if (map) {
+                    modalMap.setView(map.getCenter(), map.getZoom());
+                } else {
+                    modalMap.setView([53.9, 27.5667], 7);
+                }
+
+                // 3. Переносим маркер, если он есть
+                if (modalMarker) {
+                    modalMap.removeLayer(modalMarker);
+                }
+
+                if (currentMarker) {
+                    const latLng = currentMarker.getLatLng();
+                    const popupContent = currentMarker.getPopup().getContent();
+
+                    modalMarker = L.marker(latLng).addTo(modalMap)
+                        .bindPopup(popupContent).openPopup();
+                }
+
+                // Важно: пересчитываем размеры карты
+                modalMap.invalidateSize();
+            });
+
+            // --- Selection Logic ---
+        $(document).on('click', '#exportPdfBtn', function() {
+            // Создаем форму для отправки текущих фильтров
+            var form = $('<form>', {
+                'method': 'GET', // Используем GET, так как метод контроллера [HttpGet]
+                'action': '@Url.Action("ExportToPdf", "Catalog")',
+                'target': '_blank' // Открываем в новой вкладке, чтобы не блокировать интерфейс
+            });
+
+            // Собираем данные из основной формы поиска
+            var formData = $('#searchForm').serializeArray();
+
+            $.each(formData, function(i, field) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: field.name,
+                    value: field.value
+                }).appendTo(form);
+            });
+
+            form.appendTo('body').submit().remove();
+        });
+
+            function clearSelection() {
+                selectedObjects = [];
+                $('.row-checkbox').prop('checked', false);
+                $('.search-result-row').removeClass('selected');
+                $('#selectAll').prop('checked', false);
+                updateBulkOperationsPanel();
+            }
+
+            $(document).on('change', '.row-checkbox', function() {
+                const row = $(this).closest('tr');
+                const id = $(this).data('id');
+                const type = $(this).data('type');
+
+                if (this.checked) {
+                    if (!selectedObjects.some(x => x.id === id && x.type === type)) {
+                        selectedObjects.push({ id: id, type: type });
+                    }
+                    row.addClass('selected');
+                } else {
+                    selectedObjects = selectedObjects.filter(x => !(x.id === id && x.type === type));
+                    row.removeClass('selected');
+                }
+                updateBulkOperationsPanel();
+            });
+
+            $(document).on('change', '#selectAll', function() {
+                const isChecked = this.checked;
+                $('.row-checkbox').each(function() {
+                    const checkbox = $(this);
+                    const row = checkbox.closest('tr');
+                    const id = checkbox.data('id');
+                    const type = checkbox.data('type');
+
+                    checkbox.prop('checked', isChecked);
+                    if (isChecked) {
+                        row.addClass('selected');
+                        if (!selectedObjects.some(x => x.id === id && x.type === type)) {
+                            selectedObjects.push({ id: id, type: type });
+                        }
+                    } else {
+                        row.removeClass('selected');
+                        selectedObjects = selectedObjects.filter(x => !(x.id === id && x.type === type));
+                    }
+                });
+                updateBulkOperationsPanel();
+            });
+
+            $('#clearSelectionBtn').click(clearSelection);
+
+            // --- Bulk Export ---
+            $('#bulkExportBtn').click(function() {
+                if (selectedObjects.length === 0) return;
+
+                var form = $('<form>', {
+                    'method': 'POST',
+                    'action': '@Url.Action("ExportSelectedToPdf", "Catalog")'
+                });
+
+                selectedObjects.forEach((item, index) => {
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: `items[${index}].Id`,
+                        value: item.id
+                    }).appendTo(form);
+
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: `items[${index}].Type`,
+                        value: item.type
+                    }).appendTo(form);
+                });
+
+                form.appendTo('body').submit().remove();
+            });
+
+            // Init
+            updateFilterBadge();
+            updateSortIcons();
+        });
+    </script>
+}
+
+@functions {
+    public string GetObjectTypeIcon(string type)
+    {
+        return type switch
+        {
+            "ATE" => "bi-geo-alt",
+            "AIR" => "bi-airplane",
+            "RW" => "bi-train-front",
+            "FGO" => "bi-water",
+            _ => "bi-geo"
+        };
+    }
+}

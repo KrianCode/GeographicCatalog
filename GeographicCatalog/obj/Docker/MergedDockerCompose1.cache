@@ -1,0 +1,107 @@
+name: dockercompose10418622264825907277
+services:
+  db:
+    container_name: geographiccatalog-db
+    environment:
+      POSTGRES_DB: geographiccatalog
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U postgres -d geographiccatalog
+      timeout: 5s
+      interval: 5s
+      retries: 5
+    image: postgres:16-alpine
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 5432
+        published: "5432"
+        protocol: tcp
+    volumes:
+      - type: volume
+        source: postgres_data
+        target: /var/lib/postgresql/data
+        volume: {}
+      - type: bind
+        source: C:\Users\Pisa\Downloads\Практика\GeographicCatalog\init-db\00-create-user.sql
+        target: /docker-entrypoint-initdb.d/00-create-user.sql
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\Pisa\Downloads\Практика\GeographicCatalog\init.sql
+        target: /docker-entrypoint-initdb.d/01-schema.sql
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\Pisa\Downloads\Практика\GeographicCatalog\init-db\02-rename-tables.sql
+        target: /docker-entrypoint-initdb.d/02-rename-tables.sql
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\Pisa\Downloads\Практика\GeographicCatalog\init-db\03-lowercase-columns.sql
+        target: /docker-entrypoint-initdb.d/03-lowercase-columns.sql
+        bind:
+          create_host_path: true
+  geographiccatalog:
+    build:
+      context: C:\Users\Pisa\Downloads\Практика\GeographicCatalog
+      dockerfile: GeographicCatalog/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ASPNETCORE_HTTPS_PORTS: "8081"
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=geographiccatalog;Username=postgres;Password=postgres
+    image: geographiccatalog
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 8080
+        published: "8080"
+        protocol: tcp
+      - mode: ingress
+        target: 8080
+        protocol: tcp
+      - mode: ingress
+        target: 8081
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: C:\Users\Pisa\AppData\Roaming/Microsoft/UserSecrets
+        target: /home/app/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\Pisa\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\Pisa\AppData\Roaming/ASP.NET/Https
+        target: /home/app/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\Pisa\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+networks:
+  default:
+    name: dockercompose10418622264825907277_default
+volumes:
+  postgres_data:
+    name: dockercompose10418622264825907277_postgres_data

@@ -1,0 +1,707 @@
+@using GeographicCatalog.Models
+@using System.Text
+
+@model GeographicCatalog.Models.Airport
+@{
+    ViewData["Title"] = ViewBag.PageTitle ?? $"{Model.NAMERUS} - Детальная информация";
+    var changeHistory = ViewBag.ChangeHistory as List<dynamic>;
+}
+
+@functions {
+    public static string ApplyStress(string text, string stressData)
+    {
+        if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(stressData)) return text;
+        try
+        {
+            var stressIndices = stressData.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => int.Parse(s.Trim()) - 1).ToHashSet();
+            if (!stressIndices.Any()) return text;
+            var sb = new StringBuilder();
+            int letterIndex = 0;
+            foreach (char c in text)
+            {
+                sb.Append(c);
+                if (stressIndices.Contains(letterIndex)) sb.Append('\u0301');
+                letterIndex++;
+            }
+            return sb.ToString();
+        }
+        catch { return text; }
+    }
+}
+
+<style>
+    /* --- Hero Section --- */
+    .details-hero {
+        background: var(--color-bg-elevated);
+        border: 1px solid var(--color-border-soft);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .hero-icon {
+        width: 64px;
+        height: 64px;
+        background: var(--color-bg);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--primary-color);
+        border: 1px solid var(--color-border-soft);
+    }
+
+    .hero-content h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--color-text);
+        margin: 0 0 0.25rem 0;
+    }
+
+    .hero-subtitle {
+        color: var(--color-text-muted);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    /* --- Breadcrumb --- */
+    .breadcrumb-modern {
+        background: transparent;
+        padding: 0 0 1.5rem 0;
+    }
+
+    .breadcrumb-item a {
+        color: var(--color-text-muted);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        .breadcrumb-item a:hover {
+            color: var(--primary-color);
+        }
+
+    .breadcrumb-item.active {
+        color: var(--color-text);
+    }
+
+    /* --- Info Cards --- */
+    .info-card {
+        background: var(--color-bg-elevated);
+        border: 1px solid var(--color-border-soft);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-card-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--color-border-soft);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: var(--color-bg-elevated);
+    }
+
+        .info-card-header h5 {
+            margin: 0;
+            font-weight: 600;
+            color: var(--color-text);
+            font-size: 1rem;
+        }
+
+    .info-card-body {
+        padding: 1.5rem;
+    }
+
+    /* --- Info Grid --- */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .info-value {
+        font-size: 0.95rem;
+        color: var(--color-text);
+        font-weight: 500;
+    }
+
+        .info-value code {
+            background: var(--color-bg);
+            color: var(--color-text);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            border: 1px solid var(--color-border-soft);
+        }
+
+    /* --- Badges --- */
+    .category-badge {
+        background: var(--color-bg);
+        color: var(--color-text);
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid var(--color-border-soft);
+    }
+
+    /* --- Tabs --- */
+    .tabs-container {
+        background: var(--color-bg-elevated);
+        border: 1px solid var(--color-border-soft);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .tabs-header {
+        display: flex;
+        border-bottom: 1px solid var(--color-border-soft);
+        background: var(--color-bg-elevated);
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: none;
+        padding: 1rem 1.5rem;
+        color: var(--color-text-muted);
+        font-weight: 500;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .tab-btn:hover {
+            color: var(--color-text);
+            background: rgba(148,163,184,0.12);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            background: transparent;
+        }
+
+    .tabs-content {
+        padding: 1.5rem;
+    }
+
+    .tab-pane {
+        display: none;
+    }
+
+        .tab-pane.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .tab-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--color-text);
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--color-border-soft);
+    }
+
+    /* --- Coordinates --- */
+    .coordinates-box {
+        background: var(--color-bg);
+        border: 1px solid var(--color-border-soft);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .coordinates-value {
+        font-family: monospace;
+        font-size: 1rem;
+        color: var(--color-text);
+    }
+
+    .copy-btn {
+        background: transparent;
+        border: 1px solid var(--color-border-soft);
+        color: var(--color-text-muted);
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: all 0.2s;
+    }
+
+        .copy-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+    /* --- History --- */
+    .history-timeline {
+        position: relative;
+        padding-left: 1.5rem;
+        border-left: 2px solid var(--color-border-soft);
+    }
+
+    .history-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+        padding-left: 1rem;
+    }
+
+        .history-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 0.25rem;
+            width: 12px;
+            height: 12px;
+            background: var(--color-bg-elevated);
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+
+    .history-date {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--color-text-muted);
+        margin-bottom: 0.25rem;
+    }
+
+    .history-text {
+        color: var(--color-text);
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .history-document {
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--color-text-muted);
+        background: var(--color-bg);
+        padding: 0.5rem;
+        border-radius: 6px;
+        border: 1px solid var(--color-border-soft);
+    }
+
+    /* --- Actions Panel --- */
+    .actions-panel {
+        background: var(--color-bg-elevated);
+        border: 1px solid var(--color-border-soft);
+        border-radius: 12px;
+        overflow: hidden;
+        position: sticky;
+        top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .actions-header {
+        padding: 1rem 1.5rem;
+        background: var(--color-bg);
+        border-bottom: 1px solid var(--color-border-soft);
+    }
+
+        .actions-header h5 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+    .actions-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        cursor: pointer;
+    }
+
+    .action-btn-primary {
+        background: var(--primary-color);
+        color: #fff;
+        border-color: var(--primary-color);
+    }
+
+        .action-btn-primary:hover {
+            opacity: 0.9;
+            color: #fff;
+        }
+
+    .action-btn-outline {
+        background: transparent;
+        border-color: var(--color-border-soft);
+        color: var(--color-text);
+    }
+
+        .action-btn-outline:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+    .action-btn-danger {
+        background: transparent;
+        border-color: var(--color-border-soft);
+        color: var(--color-text);
+    }
+
+        .action-btn-danger:hover {
+            background: rgba(220, 38, 38, 0.15);
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+
+    .no-data {
+        color: var(--color-text-muted);
+        font-style: italic;
+        font-size: 0.9rem;
+    }
+
+    /* --- Dark Theme Fixes --- */
+    html[data-theme="dark"] .details-hero {
+        background: var(--color-bg-elevated) !important;
+        border-color: var(--color-border-soft) !important;
+    }
+
+    html[data-theme="dark"] .hero-icon {
+        background: var(--color-bg) !important;
+        border-color: var(--color-border-soft) !important;
+    }
+
+    html[data-theme="dark"] .info-card {
+        background: var(--color-bg-elevated) !important;
+        border-color: var(--color-border-soft) !important;
+    }
+
+    html[data-theme="dark"] .info-card-header {
+        background: var(--color-bg-elevated) !important;
+        border-bottom-color: var(--color-border-soft) !important;
+    }
+
+    html[data-theme="dark"] .tabs-container {
+        background: var(--color-bg-elevated) !important;
+        border-color: var(--color-border-soft) !important;
+    }
+
+    html[data-theme="dark"] .tabs-header {
+        background: var(--color-bg-elevated) !important;
+        border-bottom-color: var(--color-border-soft) !important;
+    }
+
+    html[data-theme="dark"] .tab-btn:hover {
+        background: rgba(255,255,255,0.05) !important;
+    }
+
+    html[data-theme="dark"] .coordinates-box {
+        background: var(--color-bg) !important;
+        border-color: var(--color-border-soft) !important;
+    }
+
+    html[data-theme="dark"] .history-document {
+        background: var(--color-bg) !important;
+        border-color: var(--color-border-soft) !important;
+    }
+
+    html[data-theme="dark"] .actions-panel {
+        background: var(--color-bg-elevated) !important;
+        border-color: var(--color-border-soft) !important;
+    }
+
+    html[data-theme="dark"] .actions-header {
+        background: var(--color-bg) !important;
+        border-bottom-color: var(--color-border-soft) !important;
+    }
+
+    html[data-theme="dark"] .action-btn-outline {
+        border-color: var(--color-border-soft) !important;
+        color: var(--color-text) !important;
+    }
+
+    html[data-theme="dark"] .action-btn-outline:hover {
+        border-color: var(--primary-color) !important;
+        color: var(--primary-color) !important;
+    }
+
+    html[data-theme="dark"] .category-badge {
+        background: var(--color-bg) !important;
+        border-color: var(--color-border-soft) !important;
+        color: var(--color-text) !important;
+    }
+
+    html[data-theme="dark"] .text-muted {
+        color: var(--color-text-muted) !important;
+    }
+
+    html[data-theme="dark"] .info-value code {
+        background: var(--color-bg) !important;
+        border-color: var(--color-border-soft) !important;
+        color: var(--color-text) !important;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-modern">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Catalog")">Поиск</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Catalog", new { objectType = "AIR" })">Аэропорты</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.NAMERUS</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="details-hero">
+        <div class="hero-icon">
+            <i class="bi bi-airplane"></i>
+        </div>
+        <div class="hero-content">
+            <h1>@Model.NAMERUS</h1>
+            <p class="hero-subtitle">@Model.NAMEBEL</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-lg-8">
+            <!-- Main Info -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="bi bi-info-circle" style="color: var(--color-text-muted);"></i>
+                    <h5>Основная информация</h5>
+                </div>
+                <div class="info-card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Категория</span>
+                            <span class="info-value"><span class="category-badge">@Model.CATEGORY</span></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Область</span>
+                            <span class="info-value">@(Model.RegionName ?? "Нет данных")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Район</span>
+                            <span class="info-value">@(Model.DistrictName ?? "Нет данных")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Дата регистрации</span>
+                            <span class="info-value">@(Model.DATEREG?.ToString("dd.MM.yyyy") ?? "Нет данных")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Номенклатура</span>
+                            <span class="info-value" style="font-family: monospace;">@Model.NOMENKLAT</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="geo">
+                        <i class="bi bi-geo-alt"></i> География
+                    </button>
+                    @if (changeHistory != null && changeHistory.Any())
+                    {
+                        <button class="tab-btn" data-tab="history">
+                            <i class="bi bi-clock-history"></i> История
+                        </button>
+                    }
+                    <button class="tab-btn" data-tab="info">
+                        <i class="bi bi-book"></i> Справка
+                    </button>
+                </div>
+                <div class="tabs-content">
+                    <!-- Geo Tab -->
+                    <div class="tab-pane active" id="geo">
+                        <h5 class="tab-title">Географические данные</h5>
+
+                        <div class="info-item mb-4">
+                            <span class="info-label mb-2 d-block">Координаты (WGS-84)</span>
+                            @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
+                            {
+                                <div class="coordinates-box">
+                                    <span class="coordinates-value">@Model.Latitude?.ToString("F6"), @Model.Longitude?.ToString("F6")</span>
+                                    <button class="copy-btn" onclick="copyCoordinates('@($"{Model.Latitude?.ToString("F6")}, {Model.Longitude?.ToString("F6")}")', this)">
+                                        <i class="bi bi-clipboard"></i> Копировать
+                                    </button>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="no-data">Не указаны</span>
+                            }
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Геопривязка</span>
+                            <span class="info-value">@(Model.LocationDescription ?? "Нет данных")</span>
+                        </div>
+                    </div>
+
+                    <!-- History Tab -->
+                    @if (changeHistory != null && changeHistory.Any())
+                    {
+                        <div class="tab-pane" id="history">
+                            <h5 class="tab-title">История изменений</h5>
+                            <div class="history-timeline">
+                                @foreach (var record in changeHistory)
+                                {
+                                    <div class="history-item">
+                                        <div class="history-date">
+                                            @(((DateTime)record.ChangeDate).ToString("dd.MM.yyyy"))
+                                        </div>
+                                        <div class="history-text">@record.ChangeDescription</div>
+                                        @if (record.DocumentName != null)
+                                        {
+                                            <div class="history-document">
+                                                <i class="bi bi-file-earmark-text me-1"></i>
+                                                @record.DocumentName от @(((DateTime?)record.DocumentDate)?.ToString("dd.MM.yyyy"))
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Info Tab -->
+                    <div class="tab-pane" id="info">
+                        <h5 class="tab-title">Справочная информация</h5>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Название (лат.)</span>
+                                <span class="info-value">@(Model.NAMELAT ?? "Нет данных")</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Ударение (рус.)</span>
+                                <span class="info-value">@(ApplyStress(Model.NAMERUS, Model.UDARRUS) ?? "Нет данных")</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Ударение (бел.)</span>
+                                <span class="info-value">@(ApplyStress(Model.NAMEBEL, Model.UDARBEL) ?? "Нет данных")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-lg-4">
+            <div class="actions-panel">
+                <div class="actions-header">
+                    <h5>Быстрые действия</h5>
+                </div>
+                <div class="actions-body">
+                    @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
+                    {
+                        <button class="action-btn action-btn-primary" onclick="showOnMap(@Model.Latitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture), @Model.Longitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture), '@Model.NAMERUS')">
+                            <i class="bi bi-map"></i> Показать на карте
+                        </button>
+                    }
+                    <a href="@Url.Action("Index", "Catalog", new { objectType = "AIR" })" class="action-btn action-btn-outline">
+                        <i class="bi bi-airplane"></i> Все аэропорты
+                    </a>
+                    <a href="@Url.Action("ExportAirportDetailsToPdf", "Catalog", new { id = Model.ID_AIR })" class="action-btn action-btn-danger">
+                        <i class="bi bi-file-earmark-pdf"></i> Экспорт в PDF
+                    </a>
+                    <button class="action-btn action-btn-outline" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Распечатать
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+                this.classList.add('active');
+                document.getElementById(this.dataset.tab).classList.add('active');
+            });
+        });
+
+        function copyCoordinates(text, button) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHtml = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-check-lg"></i> Скопировано';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.innerHTML = originalHtml;
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function showOnMap(lat, lon, name) {
+            const url = `https://yandex.ru/maps/?pt=${lon},${lat}&z=14&l=map&text=${encodeURIComponent(name)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+}

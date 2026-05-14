@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Каталог географических объектов</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .details-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .object-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid #e9ecef;
+        }
+
+            .info-card h5 {
+                color: #495057;
+                border-bottom: 2px solid #dee2e6;
+                padding-bottom: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+        .info-item {
+            margin-bottom: 0.75rem;
+            display: flex;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #6c757d;
+            min-width: 200px;
+        }
+
+        .info-value {
+            color: #212529;
+            flex: 1;
+        }
+
+        .coordinates-badge {
+            font-family: 'Courier New', monospace;
+            background-color: #e9ecef;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+
+        .type-badge {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+        }
+
+        .action-buttons {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+
+        .map-container {
+            height: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            background-color: #f8f9fa;
+        }
+
+        .status-active {
+            color: #198754;
+        }
+
+        .status-inactive {
+            color: #dc3545;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 0 0 10px 10px;
+            padding: 1.5rem;
+            border: 1px solid #dee2e6;
+            border-top: none;
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: white;
+            border-bottom-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="details-container">
+            <!-- Хлебные крошки -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Главная</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Search", "Catalog")">Поиск</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+
+            @RenderBody()
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function copyToClipboard(text, button) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHtml = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-check"></i>';
+                button.classList.remove('btn-outline-secondary');
+                button.classList.add('btn-success');
+
+                setTimeout(() => {
+                    button.innerHTML = originalHtml;
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-outline-secondary');
+                }, 2000);
+            });
+        }
+
+        function showOnMap(lat, lon, title) {
+            // Реализация показа на карте
+            alert(`Показать на карте: ${title}\nШирота: ${lat}\nДолгота: ${lon}`);
+        }
+
+        function printDetails() {
+            window.print();
+        }
+
+        function exportToPDF() {
+            alert('Экспорт в PDF будет реализован в следующих версиях');
+        }
+
+        // Инициализация табов
+        document.addEventListener('DOMContentLoaded', function() {
+            var triggerTabList = [].slice.call(document.querySelectorAll('#detailsTab button'));
+            triggerTabList.forEach(function (triggerEl) {
+                var tabTrigger = new bootstrap.Tab(triggerEl);
+                triggerEl.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    tabTrigger.show();
+                });
+            });
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
