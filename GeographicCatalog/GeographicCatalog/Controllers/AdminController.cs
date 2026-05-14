@@ -1264,13 +1264,17 @@ namespace GeographicCatalog.Controllers
 
         private void LoadEditDropdowns(NpgsqlConnection connection, int? regionId = null)
         {
+            var regionIdsWithoutDistricts = QueryRegionIdsWithNoDistricts(connection);
+            ViewBag.RegionIdsWithoutDistricts = regionIdsWithoutDistricts;
+
             ViewBag.Regions = connection.Query<SelectListItem>(
                 "SELECT id_obl::text AS Value, obl AS Text FROM kn_obl ORDER BY obl").ToList();
             
             ViewBag.Regions.Insert(0, new SelectListItem { Value = "", Text = "-- Выберите область --" });
 
             ViewBag.Districts = new List<SelectListItem>();
-            if (regionId.HasValue && regionId.Value > 0)
+            if (regionId.HasValue && regionId.Value > 0
+                && !regionIdsWithoutDistricts.Contains(regionId.Value))
             {
                 ViewBag.Districts = GetDistrictsByRegion(connection, regionId.Value);
             }
@@ -1307,6 +1311,34 @@ namespace GeographicCatalog.Controllers
                 return regionId > 0;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Области без выбора района в формах админки (как в каталоге: г. Минск и области без привязок в справочниках).
+        /// </summary>
+        private static List<int> QueryRegionIdsWithNoDistricts(NpgsqlConnection connection)
+        {
+            const string sql = @"
+                SELECT o.id_obl
+                FROM kn_obl o
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM kn_dbate b WHERE b.id_obl = o.id_obl AND b.id_ra IS NOT NULL
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM kn_dbair a WHERE a.obl = o.id_obl AND a.ra IS NOT NULL
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM kn_dbfgo f WHERE f.obl = o.id_obl AND f.ra IS NOT NULL
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM kn_dbrw w WHERE w.obl = o.id_obl AND w.ra IS NOT NULL
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM kn_dbfgo_obl_ra x WHERE x.obl = o.id_obl AND x.ra IS NOT NULL
+                )
+                OR TRIM(COALESCE(o.obl, '')) = 'Минск'
+                ORDER BY o.id_obl";
+            return connection.Query<int>(sql).ToList();
         }
 
         /// <summary>
@@ -1379,6 +1411,9 @@ namespace GeographicCatalog.Controllers
                     return Json(new List<object>());
 
                 using var connection = CreateConnection();
+                if (QueryRegionIdsWithNoDistricts(connection).Contains(rid))
+                    return Json(new List<object>());
+
                 var list = GetDistrictsByRegion(connection, rid);
 
                 _logger?.LogInformation("GetDistrictsForAdmin: RegionId={RegionId}, Count={Count}",

@@ -632,7 +632,13 @@ public IActionResult DetailsATE(int id)
             try
             {
                 using var connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-                
+
+                var regionName = connection.QuerySingleOrDefault<string>(
+                    "SELECT obl FROM kn_obl WHERE id_obl = @RegionId",
+                    new { RegionId = regionId });
+                if (string.Equals(regionName?.Trim(), "Минск", StringComparison.Ordinal))
+                    return Json(new List<SelectListItem>());
+
                 var query = @"
                     WITH AllDistrictIds AS (
                         SELECT id_ra AS DistrictId FROM kn_dbate WHERE id_obl = @RegionId AND id_ra IS NOT NULL
@@ -682,6 +688,7 @@ public IActionResult DetailsATE(int id)
 
         /// <summary>
         /// Области, по которым в справочнике нет привязки к районам (например г. Минск как отдельная область в kn_obl).
+        /// Запись с наименованием «Минск» всегда включается: у города нет районного деления в фильтре, даже если в БД есть «лишние» связи.
         /// Совпадает с логикой отбора районов в <see cref="GetDistrictsByRegion"/>.
         /// </summary>
         private static List<int> QueryRegionIdsWithNoDistricts(NpgsqlConnection connection)
@@ -704,6 +711,7 @@ public IActionResult DetailsATE(int id)
                 AND NOT EXISTS (
                     SELECT 1 FROM kn_dbfgo_obl_ra x WHERE x.obl = o.id_obl AND x.ra IS NOT NULL
                 )
+                OR TRIM(COALESCE(o.obl, '')) = 'Минск'
                 ORDER BY o.id_obl";
             return connection.Query<int>(sql).ToList();
         }

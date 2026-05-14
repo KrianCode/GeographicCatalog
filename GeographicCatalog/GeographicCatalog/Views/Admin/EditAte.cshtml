@@ -1,10 +1,13 @@
 @model GeographicCatalog.Models.AdminEditAteViewModel
+@using System.Text.Json
 @{
     ViewData["Title"] = ViewBag.Title ?? "Населённый пункт";
     var regions = ViewBag.Regions as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
     var districts = ViewBag.Districts as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
     var ateTypes = ViewBag.AteTypes as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
     var isCreate = Model.Id == 0;
+    var regionIdsNoDistrict = ViewBag.RegionIdsWithoutDistricts as List<int> ?? new List<int>();
+    var ateDistrictDisabled = !Model.RegionId.HasValue || regionIdsNoDistrict.Contains(Model.RegionId.Value);
 }
 
 <nav aria-label="Навигационная цепочка" class="mb-3">
@@ -72,7 +75,7 @@
                         </div>
                         <div class="col-md-6">
                             <label asp-for="DistrictId" class="form-label"></label>
-                            <select asp-for="DistrictId" class="form-select" id="ate-district">
+                            <select asp-for="DistrictId" class="form-select" id="ate-district" disabled="@ateDistrictDisabled">
                                 <option value="">— Выберите —</option>
                                 @foreach (var d in districts)
                                 {
@@ -172,15 +175,43 @@
     </div>
 </form>
 
+<script type="application/json" id="ate-region-ids-no-district">@Html.Raw(JsonSerializer.Serialize(regionIdsNoDistrict))</script>
+
 @section Scripts {
 <script>
 (function() {
     var getDistrictsUrl = '@Url.Action("GetDistrictsForAdmin", "Admin")';
-    document.getElementById('ate-region').addEventListener('change', function() {
-        var rid = this.value;
-        var dest = document.getElementById('ate-district');
+    var regionEl = document.getElementById('ate-region');
+    var dest = document.getElementById('ate-district');
+    var regionIdsNoDistrict = (function() {
+        try {
+            var el = document.getElementById('ate-region-ids-no-district');
+            if (!el || !el.textContent) return new Set();
+            var arr = JSON.parse(el.textContent.trim());
+            if (!Array.isArray(arr)) return new Set();
+            return new Set(arr.map(function(x) { return Number(x); }).filter(function(n) { return Number.isFinite(n); }));
+        } catch (e) { return new Set(); }
+    })();
+    function isRegionWithoutDistricts(regionIdStr) {
+        if (!regionIdStr) return true;
+        var id = parseInt(regionIdStr, 10);
+        return !Number.isFinite(id) || regionIdsNoDistrict.has(id);
+    }
+    function setDistrictEnabled(enabled) {
+        dest.disabled = !enabled;
+    }
+    function onRegionChange() {
+        var rid = regionEl.value;
         dest.innerHTML = '<option value="">— Выберите —</option>';
-        if (!rid) return;
+        if (!rid) {
+            setDistrictEnabled(false);
+            return;
+        }
+        if (isRegionWithoutDistricts(rid)) {
+            setDistrictEnabled(false);
+            return;
+        }
+        setDistrictEnabled(true);
         fetch(getDistrictsUrl + '?regionId=' + encodeURIComponent(rid))
             .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
             .then(function(data) {
@@ -192,7 +223,22 @@
                 });
             })
             .catch(function() { /* остаётся только «— Выберите —» */ });
-    });
+    }
+    function applyInitialDistrictState() {
+        var rid = regionEl.value;
+        if (!rid) {
+            setDistrictEnabled(false);
+            return;
+        }
+        if (isRegionWithoutDistricts(rid)) {
+            dest.innerHTML = '<option value="">— Выберите —</option>';
+            setDistrictEnabled(false);
+            return;
+        }
+        setDistrictEnabled(true);
+    }
+    regionEl.addEventListener('change', onRegionChange);
+    applyInitialDistrictState();
 })();
 </script>
 }
