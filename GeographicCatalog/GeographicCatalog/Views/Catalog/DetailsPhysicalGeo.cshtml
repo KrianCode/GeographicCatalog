@@ -606,7 +606,16 @@
                         </div>
                         <div class="info-item">
                             <span class="info-label">Область</span>
-                            <span class="info-value">@(Model.RegionName ?? "<span class='no-data'>Нет данных</span>")</span>
+                            <span class="info-value">
+                                @if (string.IsNullOrEmpty(Model.RegionName))
+                                {
+                                    <span class="no-data">Нет данных</span>
+                                }
+                                else
+                                {
+                                    @Model.RegionName
+                                }
+                            </span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Районы</span>
@@ -623,7 +632,16 @@
                         </div>
                         <div class="info-item">
                             <span class="info-label">Дата регистрации</span>
-                            <span class="info-value">@(Model.DATEREG?.ToString("dd.MM.yyyy") ?? "<span class='no-data'>Нет данных</span>")</span>
+                            <span class="info-value">
+                                @if (!Model.DATEREG.HasValue)
+                                {
+                                    <span class="no-data">Нет данных</span>
+                                }
+                                else
+                                {
+                                    @Model.DATEREG.Value.ToString("dd.MM.yyyy")
+                                }
+                            </span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Номенклатура</span>
