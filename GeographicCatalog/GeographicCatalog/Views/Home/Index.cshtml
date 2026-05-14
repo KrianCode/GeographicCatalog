@@ -95,6 +95,31 @@
         color: var(--color-fgo);
     }
 
+    /* Тёмная тема: пастель + наследованный светлый текст = невидимый глиф; тёмная «пилюля» + светлая иконка */
+    html[data-theme="dark"] .stat-icon-wrapper.icon-ate,
+    html[data-bs-theme="dark"] .stat-icon-wrapper.icon-ate {
+        background-color: rgba(37, 99, 235, 0.22);
+        color: #93c5fd;
+    }
+
+    html[data-theme="dark"] .stat-icon-wrapper.icon-air,
+    html[data-bs-theme="dark"] .stat-icon-wrapper.icon-air {
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #6ee7b7;
+    }
+
+    html[data-theme="dark"] .stat-icon-wrapper.icon-rw,
+    html[data-bs-theme="dark"] .stat-icon-wrapper.icon-rw {
+        background-color: rgba(245, 158, 11, 0.2);
+        color: #fcd34d;
+    }
+
+    html[data-theme="dark"] .stat-icon-wrapper.icon-fgo,
+    html[data-bs-theme="dark"] .stat-icon-wrapper.icon-fgo {
+        background-color: rgba(6, 182, 212, 0.2);
+        color: #67e8f9;
+    }
+
     .stat-value {
         font-size: 2rem;
         font-weight: 700;
