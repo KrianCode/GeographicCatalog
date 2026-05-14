@@ -1,6 +1,9 @@
 @model GeographicCatalog.Models.SearchModel
+@using System.Text.Json
 @{
     ViewData["Title"] = "Отчеты — Админ";
+    var regionIdsNoDistrict = ViewBag.RegionIdsWithNoDistricts as List<int> ?? new List<int>();
+    var repDistrictDisabled = Model.RegionId.HasValue && regionIdsNoDistrict.Contains(Model.RegionId.Value);
     var regions = ViewBag.Regions as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
     var districts = ViewBag.Districts as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
     var reportTypes = Model.ObjectTypes.Where(kv => !string.IsNullOrEmpty(kv.Key)).ToList();
@@ -79,12 +82,28 @@
                 </select>
             </div>
             <div class="col-md-4">
-                <label class="form-label small text-muted">Район</label>
-                <select asp-for="DistrictId" name="districtId" class="form-select" id="rep-district">
-                    <option value="">— Все —</option>
+                <label class="form-label small text-muted" for="rep-district">Район</label>
+                @* Без asp-for на select: иначе RZ1031 при условном disabled *@
+                <select name="districtId" id="rep-district" class="form-select" @(repDistrictDisabled ? "disabled" : null)>
+                    @if (!Model.DistrictId.HasValue)
+                    {
+                        <option value="" selected>— Все —</option>
+                    }
+                    else
+                    {
+                        <option value="">— Все —</option>
+                    }
                     @foreach (var d in districts.Where(d => !string.IsNullOrEmpty(d.Value)))
                     {
-                        <option value="@d.Value">@d.Text</option>
+                        var districtSelected = Model.DistrictId.HasValue && string.Equals(d.Value, Model.DistrictId.Value.ToString(), StringComparison.Ordinal);
+                        if (districtSelected)
+                        {
+                            <option value="@d.Value" selected>@d.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@d.Value">@d.Text</option>
+                        }
                     }
                 </select>
             </div>
@@ -223,15 +242,33 @@
 </div>
 </form>
 
+<script type="application/json" id="reports-region-ids-no-district">@Html.Raw(JsonSerializer.Serialize(regionIdsNoDistrict))</script>
+
 @section Scripts {
 <script>
-var preselectedReportSubtypes = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ReportSubtypeTags ?? new List<string>()));
+var preselectedReportSubtypes = @Html.Raw(JsonSerializer.Serialize(Model.ReportSubtypeTags ?? new List<string>()));
 (function () {
     var getDistrictsUrl = '@Url.Action("GetDistrictsForAdmin", "Admin")';
     var getSubtypesUrl = '@Url.Action("GetReportSubtypes", "Admin")';
     var regionEl = document.getElementById('rep-region');
     var districtEl = document.getElementById('rep-district');
     var selectedDistrictOnLoad = districtEl ? districtEl.value : '';
+    var reportsRegionIdsWithNoDistricts = (function () {
+        try {
+            var el = document.getElementById('reports-region-ids-no-district');
+            if (!el || !el.textContent) return new Set();
+            var arr = JSON.parse(el.textContent.trim());
+            if (!Array.isArray(arr)) return new Set();
+            return new Set(arr.map(function (x) { return Number(x); }).filter(function (n) { return Number.isFinite(n); }));
+        } catch (e) {
+            return new Set();
+        }
+    })();
+    function isReportsRegionWithoutDistricts(regionIdStr) {
+        if (!regionIdStr) return false;
+        var id = parseInt(regionIdStr, 10);
+        return Number.isFinite(id) && reportsRegionIdsWithNoDistricts.has(id);
+    }
     var allowedDistrictsByRegion = {
         'Брестская': ['Барановичский', 'Березовский', 'Брестский', 'Ганцевичский', 'Дрогичинский', 'Жабинковский', 'Ивановский', 'Ивацевичский', 'Каменецкий', 'Кобринский', 'Лунинецкий', 'Ляховичский', 'Малоритский', 'Пинский', 'Пружанский', 'Столинский'],
         'Витебская': ['Бешенковичский', 'Браславский', 'Верхнедвинский', 'Витебский', 'Глубокский', 'Городокский', 'Докшицкий', 'Дубровенский', 'Лепельский', 'Лиозненский', 'Миорский', 'Оршанский', 'Полоцкий', 'Поставский', 'Россонский', 'Сенненский', 'Толочинский', 'Ушачский', 'Чашникский', 'Шарковщинский', 'Шумилинский'],
@@ -273,8 +310,16 @@ var preselectedReportSubtypes = @Html.Raw(System.Text.Json.JsonSerializer.Serial
             var rid = this.value;
             if (!rid) {
                 districtEl.innerHTML = '<option value="">— Все —</option>';
+                districtEl.disabled = false;
                 return;
             }
+            if (isReportsRegionWithoutDistricts(rid)) {
+                districtEl.innerHTML = '<option value="">— Все —</option>';
+                districtEl.value = '';
+                districtEl.disabled = true;
+                return;
+            }
+            districtEl.disabled = false;
             fetch(getDistrictsUrl + '?regionId=' + encodeURIComponent(rid))
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
@@ -283,11 +328,17 @@ var preselectedReportSubtypes = @Html.Raw(System.Text.Json.JsonSerializer.Serial
         });
 
         if (regionEl.value) {
-            fetch(getDistrictsUrl + '?regionId=' + encodeURIComponent(regionEl.value))
-                .then(function (r) { return r.json(); })
-                .then(function (data) {
-                    renderDistrictOptions(data || [], selectedDistrictOnLoad);
-                });
+            if (isReportsRegionWithoutDistricts(regionEl.value)) {
+                districtEl.innerHTML = '<option value="">— Все —</option>';
+                districtEl.disabled = true;
+            } else {
+                districtEl.disabled = false;
+                fetch(getDistrictsUrl + '?regionId=' + encodeURIComponent(regionEl.value))
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        renderDistrictOptions(data || [], selectedDistrictOnLoad);
+                    });
+            }
         }
     }
 

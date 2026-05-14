@@ -1239,11 +1239,15 @@ namespace GeographicCatalog.Controllers
         private void LoadListDropdowns(NpgsqlConnection connection, int? regionId)
         {
             LoadRegions(connection);
-            
+
+            var regionIdsWithoutDistricts = QueryRegionIdsWithNoDistricts(connection);
+            ViewBag.RegionIdsWithNoDistricts = regionIdsWithoutDistricts;
+
             ViewBag.Districts = new List<SelectListItem>();
-            
-            // Загружаем районы только если выбрана область
-            if (regionId.HasValue && regionId.Value > 0)
+
+            // Загружаем районы только если выбрана область и для неё предусмотрен выбор района (как в каталоге: г. Минск и др.).
+            if (regionId.HasValue && regionId.Value > 0
+                && !regionIdsWithoutDistricts.Contains(regionId.Value))
             {
                 ViewBag.Districts = GetDistrictsByRegion(connection, regionId.Value);
             }
