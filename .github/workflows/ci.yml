@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  CSPROJ: GeographicCatalog/GeographicCatalog/GeographicCatalog.csproj
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore "${{ env.CSPROJ }}"
+
+      - name: Build
+        run: dotnet build "${{ env.CSPROJ }}" -c Release --no-restore
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./GeographicCatalog
+          file: ./GeographicCatalog/GeographicCatalog/Dockerfile
+          push: false
+          tags: geographiccatalog:ci
