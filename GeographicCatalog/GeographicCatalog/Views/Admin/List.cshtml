@@ -104,18 +104,18 @@
     {
         <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
             @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
         </div>
     }
     @if (TempData["ErrorMessage"] != null)
     {
         <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
             @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
         </div>
     }
 
-    <nav aria-label="breadcrumb" class="mb-3">
+    <nav aria-label="Навигационная цепочка" class="mb-3">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-action="Index" style="color: var(--primary-color);">Админ-панель</a></li>
             <li class="breadcrumb-item active" aria-current="page" style="color: var(--color-text-muted);">@Model.Title</li>

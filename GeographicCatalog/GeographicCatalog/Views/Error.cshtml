@@ -1,26 +1,28 @@
-﻿@page
+@page
 @model ErrorModel
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = "Ошибка";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<h1 class="text-danger">Ошибка</h1>
+<h2 class="text-danger">При обработке запроса произошла ошибка.</h2>
 
 @if (Model.ShowRequestId)
 {
     <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+        <strong>Идентификатор запроса:</strong> <code>@Model.RequestId</code>
     </p>
 }
 
-<h3>Development Mode</h3>
+<h3>Режим разработки</h3>
 <p>
-    Swapping to the <strong>Development</strong> environment displays detailed information about the error that occurred.
+    При среде выполнения <strong>Development</strong> на странице может отображаться подробная информация об исключении.
 </p>
 <p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
+    <strong>Не включайте среду Development на опубликованных серверах.</strong>
+    Иначе конечные пользователи могут увидеть конфиденциальные сведения из сообщений об ошибках.
+</p>
+<p>
+    Для отладки на своём компьютере задайте переменную окружения <strong>ASPNETCORE_ENVIRONMENT</strong> значением <strong>Development</strong>
+    и перезапустите приложение.
 </p>
