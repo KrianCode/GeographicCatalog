@@ -713,7 +713,7 @@
                 <div class="panel-header">
                     <h5 class="panel-title">
                         <i class="bi bi-list-ul"></i> Результаты
-                        <span class="badge bg-light text-dark border ms-2">@Model.TotalCount</span>
+                        <span id="catalogTotalResultsBadge" class="badge bg-light text-dark border ms-2">@Model.TotalCount</span>
                     </h5>
                     <div class="d-flex gap-2">
                         <button class="btn btn-sm btn-outline-custom" id="exportPdfBtn" title="Экспорт в PDF">
@@ -1068,6 +1068,12 @@
                 $('#resultsContainer').load(newUrl + ' #resultsContainer > *', function(response, status, xhr) {
                     if (status == "error") {
                         alert("Ошибка загрузки данных");
+                    } else if (xhr && xhr.responseText) {
+                        const doc = new DOMParser().parseFromString(xhr.responseText, 'text/html');
+                        const nextBadge = doc.getElementById('catalogTotalResultsBadge');
+                        if (nextBadge) {
+                            $('#catalogTotalResultsBadge').text(nextBadge.textContent.trim());
+                        }
                     }
                     hideLoading();
                     clearSelection();
