@@ -215,12 +215,20 @@
 
     <!-- Hero Section -->
     <div class="hero-section">
-        <div class="row align-items-center">
+        <div class="row align-items-center g-3">
             <div class="col-lg-8">
                 <h1 class="hero-title">Государственный каталог географических объектов</h1>
                 <p class="hero-subtitle">
                     Единая информационная система учета, регистрации и хранения сведений о наименованиях географических объектов Республики Беларусь.
                 </p>
+            </div>
+            <div class="col-lg-4 d-flex justify-content-lg-end align-items-start">
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   asp-route-returnUrl="@Url.Content("~/Admin")"
+                   class="btn btn-outline-primary px-4 py-2 shadow-sm">
+                    <i class="bi bi-shield-lock me-2" aria-hidden="true"></i>Вход в админ-панель
+                </a>
             </div>
         </div>
     </div>
