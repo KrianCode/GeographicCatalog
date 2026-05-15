@@ -1,0 +1,492 @@
+/* GeographicCatalog — анимации и микровзаимодействия */
+
+/* --- Keyframes --- */
+@keyframes gc-fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes gc-fade-in-down {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes gc-fade-in-scale {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes gc-slide-in-left {
+    from {
+        opacity: 0;
+        transform: translateX(-16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes gc-slide-in-right {
+    from {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes gc-float {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    50% {
+        transform: translate(-12px, 14px) scale(1.03);
+    }
+}
+
+@keyframes gc-pulse-soft {
+    0%, 100% {
+        box-shadow: 0 4px 12px rgba(var(--brand-rgb), 0.35);
+    }
+    50% {
+        box-shadow: 0 6px 20px rgba(var(--brand-rgb), 0.5);
+    }
+}
+
+@keyframes gc-shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes gc-nav-underline {
+    from {
+        transform: scaleX(0);
+    }
+    to {
+        transform: scaleX(1);
+    }
+}
+
+@keyframes gc-icon-pop {
+    0% {
+        transform: scale(1);
+    }
+    40% {
+        transform: scale(1.15);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes gc-alert-in {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes gc-dropdown-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes gc-status-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.12);
+    }
+}
+
+/* --- Hero (главная) --- */
+.gc-hero-badge {
+    animation: gc-fade-in-down 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
+}
+
+.gc-hero-title {
+    animation: gc-fade-in-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.gc-hero-lead {
+    animation: gc-fade-in-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
+}
+
+.gc-hero-actions {
+    animation: gc-fade-in-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.32s both;
+}
+
+.gc-hero::after {
+    animation: gc-float 14s ease-in-out infinite;
+}
+
+.gc-hero .btn-gc-primary,
+.gc-hero .btn-gc-outline {
+    transition: transform var(--transition-fast), box-shadow var(--transition-base), background var(--transition-base);
+}
+
+.gc-hero .btn-gc-primary:active,
+.gc-hero .btn-gc-outline:active {
+    transform: scale(0.97);
+}
+
+/* --- Pillars overlap block --- */
+.gc-pillars .gc-pillar {
+    animation: gc-fade-in-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.gc-pillars .gc-pillar:nth-child(1) { animation-delay: 0.15s; }
+.gc-pillars .gc-pillar:nth-child(2) { animation-delay: 0.25s; }
+.gc-pillars .gc-pillar:nth-child(3) { animation-delay: 0.35s; }
+
+/* --- Stagger (дочерние элементы) --- */
+.gc-stagger:not(.gc-reveal) > *,
+.gc-reveal.is-visible .gc-stagger > *,
+.gc-reveal.is-visible.gc-stagger > * {
+    animation: gc-fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.gc-stagger:not(.gc-reveal) > *:nth-child(1),
+.gc-reveal.is-visible .gc-stagger > *:nth-child(1),
+.gc-reveal.is-visible.gc-stagger > *:nth-child(1) { animation-delay: 0.04s; }
+
+.gc-stagger:not(.gc-reveal) > *:nth-child(2),
+.gc-reveal.is-visible .gc-stagger > *:nth-child(2),
+.gc-reveal.is-visible.gc-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+
+.gc-stagger:not(.gc-reveal) > *:nth-child(3),
+.gc-reveal.is-visible .gc-stagger > *:nth-child(3),
+.gc-reveal.is-visible.gc-stagger > *:nth-child(3) { animation-delay: 0.16s; }
+
+.gc-stagger:not(.gc-reveal) > *:nth-child(4),
+.gc-reveal.is-visible .gc-stagger > *:nth-child(4),
+.gc-reveal.is-visible.gc-stagger > *:nth-child(4) { animation-delay: 0.22s; }
+
+.gc-stagger:not(.gc-reveal) > *:nth-child(5),
+.gc-reveal.is-visible .gc-stagger > *:nth-child(5),
+.gc-reveal.is-visible.gc-stagger > *:nth-child(5) { animation-delay: 0.28s; }
+
+.gc-stagger:not(.gc-reveal) > *:nth-child(6),
+.gc-reveal.is-visible .gc-stagger > *:nth-child(6),
+.gc-reveal.is-visible.gc-stagger > *:nth-child(6) { animation-delay: 0.34s; }
+
+.gc-stagger:not(.gc-reveal) > *:nth-child(7),
+.gc-reveal.is-visible .gc-stagger > *:nth-child(7),
+.gc-reveal.is-visible.gc-stagger > *:nth-child(7) { animation-delay: 0.4s; }
+
+.gc-stagger:not(.gc-reveal) > *:nth-child(8),
+.gc-reveal.is-visible .gc-stagger > *:nth-child(8),
+.gc-reveal.is-visible.gc-stagger > *:nth-child(8) { animation-delay: 0.46s; }
+
+.gc-stagger-slow > * {
+    animation-duration: 0.6s;
+}
+
+/* --- Scroll reveal (JS добавляет .is-visible) --- */
+.gc-reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+        opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gc-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.gc-reveal-scale {
+    opacity: 0;
+    transform: scale(0.97);
+    transition:
+        opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gc-reveal-scale.is-visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.gc-reveal-left {
+    opacity: 0;
+    transform: translateX(-20px);
+    transition:
+        opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gc-reveal-left.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Задержки для reveal внутри секции */
+.gc-reveal-delay-1 { transition-delay: 0.08s; }
+.gc-reveal-delay-2 { transition-delay: 0.16s; }
+.gc-reveal-delay-3 { transition-delay: 0.24s; }
+.gc-reveal-delay-4 { transition-delay: 0.32s; }
+
+/* --- Header при прокрутке --- */
+.gc-header {
+    transition:
+        box-shadow var(--transition-base),
+        border-color var(--transition-base),
+        background var(--transition-slow);
+}
+
+.gc-header.is-scrolled {
+    box-shadow: var(--shadow-md);
+}
+
+.gc-brand-icon {
+    transition: transform var(--transition-slow), box-shadow var(--transition-base);
+}
+
+.gc-brand:hover .gc-brand-icon {
+    transform: scale(1.06) rotate(-4deg);
+    animation: gc-pulse-soft 2s ease-in-out infinite;
+}
+
+.gc-nav .nav-link.active::after {
+    transform-origin: left center;
+    animation: gc-nav-underline 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* --- Кнопки и ссылки --- */
+.btn-gc-primary,
+.btn-gc-outline {
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-base),
+        background var(--transition-base),
+        color var(--transition-base),
+        border-color var(--transition-base);
+}
+
+.btn-gc-primary:active,
+.btn-gc-outline:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.gc-service-card-link i {
+    transition: transform var(--transition-base);
+}
+
+.gc-service-card:hover .gc-service-card-link i {
+    transform: translateX(4px);
+}
+
+.gc-link-arrow i {
+    transition: transform var(--transition-base);
+}
+
+.gc-link-arrow:hover i {
+    transform: translateX(4px);
+}
+
+/* --- Карточки --- */
+.gc-pillar,
+.gc-stat-card,
+.gc-service-card,
+.gc-content-card,
+.gc-about-card,
+.card {
+    will-change: transform;
+}
+
+.gc-stat-icon {
+    transition: transform var(--transition-slow);
+}
+
+.gc-stat-card:hover .gc-stat-icon {
+    transform: scale(1.08);
+}
+
+.gc-service-card:hover .gc-service-card-icon {
+    transform: scale(1.06) rotate(-3deg);
+}
+
+.gc-service-card-icon {
+    transition: transform var(--transition-slow);
+}
+
+/* --- Алерты --- */
+.gc-alert-wrap .alert {
+    animation: gc-alert-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* --- Dropdown --- */
+.gc-dropdown.show,
+.dropdown-menu.gc-dropdown.show {
+    animation: gc-dropdown-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* --- Breadcrumb --- */
+.breadcrumb-item a {
+    transition: color var(--transition-base);
+}
+
+/* --- Статус-индикатор --- */
+.gc-status-dot {
+    animation: gc-status-pulse 2.5s ease-in-out infinite;
+}
+
+/* --- Тема / a11y кнопки --- */
+.theme-toggle-btn,
+.a11y-toggle-btn {
+    transition:
+        background var(--transition-base),
+        border-color var(--transition-base),
+        color var(--transition-base),
+        transform var(--transition-fast);
+}
+
+.theme-toggle-btn:active,
+.a11y-toggle-btn:active {
+    transform: scale(0.92);
+}
+
+.theme-toggle-btn i,
+.a11y-toggle-btn i {
+    display: inline-block;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html[data-theme="dark"] .theme-toggle-btn i,
+html[data-theme="light"] .theme-toggle-btn i {
+    /* иконка меняется скриптом — лёгкий pop при смене темы */
+}
+
+/* --- Page hero --- */
+.gc-page-hero {
+    animation: gc-slide-in-left 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* --- Таблицы --- */
+.table tbody tr {
+    transition: background-color var(--transition-base);
+}
+
+.table-hover > tbody > tr {
+    transition: background-color var(--transition-base), transform var(--transition-fast);
+}
+
+/* --- Существующий fade-in (site.css) — усиление --- */
+.fade-in {
+    animation: gc-fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* --- Каталог: строки результатов --- */
+.search-result {
+    animation: gc-fade-in-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.search-result:nth-child(odd) {
+    animation-delay: 0.02s;
+}
+
+.search-result:nth-child(even) {
+    animation-delay: 0.06s;
+}
+
+.alphabet-letter {
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-base),
+        background var(--transition-base),
+        color var(--transition-base);
+}
+
+.alphabet-letter:active {
+    transform: scale(0.92);
+}
+
+/* --- Admin: панели (если есть inline-стили) --- */
+.admin-header {
+    animation: gc-fade-in-down 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.kpi-banner {
+    animation: gc-fade-in-scale 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+.module-panel {
+    transition:
+        transform var(--transition-base),
+        box-shadow var(--transition-base),
+        border-color var(--transition-base);
+}
+
+.module-panel:hover {
+    transform: translateY(-3px);
+}
+
+/* --- Reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .gc-hero::after {
+        animation: none !important;
+    }
+
+    .gc-reveal,
+    .gc-reveal-scale,
+    .gc-reveal-left {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .gc-brand:hover .gc-brand-icon {
+        animation: none !important;
+        transform: none !important;
+    }
+
+    .gc-status-dot {
+        animation: none !important;
+    }
+}

@@ -60,9 +60,9 @@
         </div>
     }
 
-    <section class="mb-5" aria-labelledby="stats-heading">
+    <section class="mb-5 gc-reveal" aria-labelledby="stats-heading">
         <h2 id="stats-heading" class="gc-section-title visually-hidden">Статистика каталога</h2>
-        <div class="row g-3 g-lg-4">
+        <div class="row g-3 g-lg-4 gc-stagger">
             <div class="col-xl-3 col-md-6">
                 <div class="gc-stat-card">
                     <div class="gc-stat-icon ate"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i></div>
@@ -94,9 +94,9 @@
         </div>
     </section>
 
-    <section class="mb-5" aria-labelledby="registries-heading">
+    <section class="mb-5 gc-reveal" aria-labelledby="registries-heading">
         <h2 id="registries-heading" class="gc-section-title"><i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i> Реестры каталога</h2>
-        <div class="row g-3 g-lg-4">
+        <div class="row g-3 g-lg-4 gc-stagger">
             <div class="col-md-6 col-lg-3">
                 <a href="@Url.Action("Index", "Catalog", new { ObjectType = "ATE" })" class="gc-service-card">
                     <div class="gc-service-card-icon ate gc-stat-icon ate mb-0"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i></div>
@@ -133,7 +133,7 @@
     </section>
 
     <section class="row g-4" aria-labelledby="about-heading">
-        <div class="col-lg-7">
+        <div class="col-lg-7 gc-reveal gc-reveal-delay-1">
             <h2 id="about-heading" class="gc-section-title"><i class="bi bi-info-circle-fill" aria-hidden="true"></i> О системе</h2>
             <div class="gc-content-card">
                 <p class="mb-4">
@@ -163,7 +163,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-5">
+        <div class="col-lg-5 gc-reveal gc-reveal-delay-2">
             <h2 class="gc-section-title"><i class="bi bi-shield-lock-fill" aria-hidden="true"></i> Администрирование</h2>
             <div class="gc-content-card d-flex flex-column h-100">
                 <p class="text-muted mb-4">Вход для сотрудников, осуществляющих ведение и актуализацию данных каталога.</p>

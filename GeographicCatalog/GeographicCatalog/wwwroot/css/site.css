@@ -1,164 +1,156 @@
-/* Дополнения к theme.css — Bootstrap и общие компоненты */
-
-:root {
-    --color-bg: var(--bg-body);
-    --color-bg-elevated: var(--bg-elevated);
-    --color-text: var(--text-body);
-    --color-text-muted: var(--text-muted);
-    --color-border-soft: var(--border-color);
-    --color-border-strong: #c5d4e2;
-    --color-table-header-bg: #e8f0f8;
-    --color-input-bg: var(--bg-elevated);
-    --color-input-border: var(--border-color);
-    --primary-color: var(--brand-primary);
-    --success-color: #16a34a;
-    --warning-color: #ca8a04;
-}
-
-html[data-theme="dark"] {
-    --color-border-strong: var(--border-color);
-    --color-table-header-bg: #1a2d4a;
-}
-
-/* Фокус для клавиатурной навигации */
-:focus-visible {
-    outline: 2px solid var(--brand-primary);
-    outline-offset: 2px;
-}
-
-.btn:focus-visible,
-.form-control:focus-visible,
-.form-select:focus-visible {
-    outline: none;
-    box-shadow: var(--focus-ring, 0 0 0 3px rgba(var(--brand-rgb), 0.22));
-}
-
-.gc-alert-wrap {
-    max-width: 1320px;
-    margin: 0 auto;
-    padding: 0 1.25rem;
-}
-
-.card {
-    border: 1px solid var(--border-color);
-    background-color: var(--bg-elevated);
-    box-shadow: var(--shadow-sm);
-    border-radius: var(--radius-md);
-    margin-bottom: 1.5rem;
-    transition: box-shadow var(--transition-base, 0.2s ease);
-}
-
-.card:hover {
-    box-shadow: var(--shadow-md);
-}
-
-.card-header {
-    border-bottom: 1px solid var(--border-color);
-    font-weight: 600;
-    background: transparent;
-    padding: 1rem 1.25rem;
-}
-
-.card-body {
-    padding: 1.25rem;
-}
-
-.form-control,
-.form-select {
-    border: 1px solid var(--color-input-border);
-    background-color: var(--color-input-bg);
-    color: var(--text-body);
-    border-radius: var(--radius-sm);
-    transition: border-color var(--transition-base, 0.2s), box-shadow var(--transition-base, 0.2s);
-}
-
-.form-control:focus,
-.form-select:focus {
-    border-color: var(--brand-primary);
-    box-shadow: var(--focus-ring, 0 0 0 3px rgba(var(--brand-rgb), 0.22));
-}
-
-.table {
-    --bs-table-bg: transparent;
-    --bs-table-color: var(--text-body);
-    --bs-table-border-color: var(--border-color);
-}
-
-.table th {
-    background-color: var(--color-table-header-bg);
-    color: var(--text-body);
-    font-weight: 600;
-    font-size: 0.8125rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    padding: 0.85rem 1rem;
-    border-bottom-width: 1px;
-}
-
-.table td {
-    padding: 0.75rem 1rem;
-    vertical-align: middle;
-}
-
-.table-hover > tbody > tr:hover > * {
-    background-color: rgba(var(--brand-rgb), 0.06);
-}
-
-.page-link {
-    color: var(--brand-primary);
-    border-color: var(--border-color);
-    border-radius: var(--radius-sm) !important;
-    margin: 0 2px;
-    transition: background var(--transition-base, 0.2s), color var(--transition-base, 0.2s);
-}
-
-.page-item.active .page-link {
-    background-color: var(--brand-primary);
-    border-color: var(--brand-primary);
-}
-
-.page-link:hover {
-    background-color: rgba(var(--brand-rgb), 0.1);
-    color: var(--brand-primary-dark);
-    border-color: var(--brand-primary);
-}
-
-.badge {
-    font-weight: 600;
-    letter-spacing: 0.02em;
-}
-
-.dropdown-menu {
-    border-radius: var(--radius-md);
-    border-color: var(--border-color);
-    box-shadow: var(--shadow-md);
-}
-
-.fade-in {
-    animation: fadeIn 0.45s ease-out both;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    html {
-        scroll-behavior: auto;
-    }
-
-    .fade-in,
-    .gc-pillar,
-    .gc-stat-card,
-    .gc-service-card {
-        animation: none !important;
-        transition: none !important;
-    }
-}
+/* Дополнения к theme.css — Bootstrap и общие компоненты */
+
+:root {
+    --color-bg: var(--bg-body);
+    --color-bg-elevated: var(--bg-elevated);
+    --color-text: var(--text-body);
+    --color-text-muted: var(--text-muted);
+    --color-border-soft: var(--border-color);
+    --color-border-strong: #c5d4e2;
+    --color-table-header-bg: #e8f0f8;
+    --color-input-bg: var(--bg-elevated);
+    --color-input-border: var(--border-color);
+    --primary-color: var(--brand-primary);
+    --success-color: #16a34a;
+    --warning-color: #ca8a04;
+}
+
+html[data-theme="dark"] {
+    --color-border-strong: var(--border-color);
+    --color-table-header-bg: #1a2d4a;
+}
+
+/* Фокус для клавиатурной навигации */
+:focus-visible {
+    outline: 2px solid var(--brand-primary);
+    outline-offset: 2px;
+}
+
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring, 0 0 0 3px rgba(var(--brand-rgb), 0.22));
+}
+
+.gc-alert-wrap {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+.card {
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-elevated);
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    transition: box-shadow var(--transition-base, 0.2s ease);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    background: transparent;
+    padding: 1rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.form-control,
+.form-select {
+    border: 1px solid var(--color-input-border);
+    background-color: var(--color-input-bg);
+    color: var(--text-body);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--transition-base, 0.2s), box-shadow var(--transition-base, 0.2s);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--brand-primary);
+    box-shadow: var(--focus-ring, 0 0 0 3px rgba(var(--brand-rgb), 0.22));
+}
+
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-body);
+    --bs-table-border-color: var(--border-color);
+}
+
+.table th {
+    background-color: var(--color-table-header-bg);
+    color: var(--text-body);
+    font-weight: 600;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.85rem 1rem;
+    border-bottom-width: 1px;
+}
+
+.table td {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+}
+
+.table-hover > tbody > tr:hover > * {
+    background-color: rgba(var(--brand-rgb), 0.06);
+}
+
+.page-link {
+    color: var(--brand-primary);
+    border-color: var(--border-color);
+    border-radius: var(--radius-sm) !important;
+    margin: 0 2px;
+    transition: background var(--transition-base, 0.2s), color var(--transition-base, 0.2s);
+}
+
+.page-item.active .page-link {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+}
+
+.page-link:hover {
+    background-color: rgba(var(--brand-rgb), 0.1);
+    color: var(--brand-primary-dark);
+    border-color: var(--brand-primary);
+}
+
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.dropdown-menu {
+    border-radius: var(--radius-md);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-md);
+}
+
+.fade-in {
+    animation: fadeIn 0.45s ease-out both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}

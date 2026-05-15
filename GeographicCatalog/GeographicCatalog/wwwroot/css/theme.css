@@ -815,7 +815,7 @@ html[data-theme="dark"] .gc-stat-icon.fgo { background: rgba(158, 184, 232, 0.12
     padding: 1.5rem;
     text-decoration: none;
     color: var(--text-body);
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    transition: transform var(--transition-slow), box-shadow var(--transition-base), border-color var(--transition-base);
 }
 
 .gc-service-card:hover {

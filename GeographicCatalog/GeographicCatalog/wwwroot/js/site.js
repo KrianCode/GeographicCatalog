@@ -6,7 +6,49 @@
 document.addEventListener('DOMContentLoaded', function () {
     initThemeToggle();
     initAccessibilityToggle();
+    initScrollReveal();
+    initHeaderScroll();
 });
+
+function initScrollReveal() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.querySelectorAll('.gc-reveal, .gc-reveal-scale, .gc-reveal-left').forEach(function (el) {
+            el.classList.add('is-visible');
+        });
+        return;
+    }
+
+    var targets = document.querySelectorAll('.gc-reveal, .gc-reveal-scale, .gc-reveal-left');
+    if (targets.length === 0) return;
+
+    if (!('IntersectionObserver' in window)) {
+        targets.forEach(function (el) { el.classList.add('is-visible'); });
+        return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { root: null, rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+    targets.forEach(function (el) { observer.observe(el); });
+}
+
+function initHeaderScroll() {
+    var header = document.querySelector('.gc-header');
+    if (!header) return;
+
+    var onScroll = function () {
+        header.classList.toggle('is-scrolled', window.scrollY > 12);
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+}
 
 function initThemeToggle() {
     var toggleBtn = document.getElementById('themeToggleBtn');
@@ -25,13 +67,18 @@ function initThemeToggle() {
         }
 
         // Обновляем иконку
-        if (theme === 'dark') {
-            toggleIcon.classList.remove('bi-moon-fill');
-            toggleIcon.classList.add('bi-sun-fill');
-        } else {
-            toggleIcon.classList.remove('bi-sun-fill');
-            toggleIcon.classList.add('bi-moon-fill');
-        }
+        toggleIcon.style.transform = 'scale(0.85) rotate(-20deg)';
+        requestAnimationFrame(function () {
+            if (theme === 'dark') {
+                toggleIcon.classList.remove('bi-moon-fill');
+                toggleIcon.classList.add('bi-sun-fill');
+            } else {
+                toggleIcon.classList.remove('bi-sun-fill');
+                toggleIcon.classList.add('bi-moon-fill');
+            }
+            toggleIcon.style.transform = 'scale(1.1) rotate(0deg)';
+            setTimeout(function () { toggleIcon.style.transform = ''; }, 280);
+        });
     }
 
     // Устанавливаем начальное состояние иконки
