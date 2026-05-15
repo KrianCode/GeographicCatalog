@@ -38,4 +38,35 @@ jobs:
           context: ./GeographicCatalog
           file: ./GeographicCatalog/GeographicCatalog/Dockerfile
           push: false
-          tags: geographiccatalog:ci
+          tags: geographiccatalog:latest
+          load: true
+
+  deploy:
+    runs-on: self-hosted
+    needs: docker
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy with Docker Compose
+        working-directory: GeographicCatalog
+        run: |
+          docker compose up -d db
+          docker compose up -d --force-recreate --no-build geographiccatalog
+
+      - name: Wait for app
+        run: |
+          $ok = $false
+          for ($i = 1; $i -le 30; $i++) {
+            try {
+              Invoke-WebRequest -Uri http://localhost:8080/ -UseBasicParsing -TimeoutSec 5 | Out-Null
+              Write-Host "Site is up at http://localhost:8080/"
+              $ok = $true
+              break
+            } catch { Start-Sleep -Seconds 2 }
+          }
+          if (-not $ok) {
+            Write-Host "Health check failed"
+            docker compose -f GeographicCatalog/docker-compose.yml logs --tail=50
+            exit 1
+          }
