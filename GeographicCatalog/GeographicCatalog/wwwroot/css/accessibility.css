@@ -103,11 +103,11 @@ html[data-accessibility="on"] .table th {
 }
 
 /* Навбар: сохраняем читаемость */
-html[data-accessibility="on"] .navbar-enterprise .nav-link {
+html[data-accessibility="on"] .gc-nav .nav-link {
     font-size: calc(0.95rem * var(--a11y-font-scale)) !important;
     padding: 0.75rem 1rem !important;
 }
-html[data-accessibility="on"] .navbar-brand {
+html[data-accessibility="on"] .gc-brand-title {
     font-size: calc(1.1rem * var(--a11y-font-scale));
 }
 
@@ -128,28 +128,9 @@ html[data-accessibility="on"] .alert {
 }
 
 /* Кнопка переключения режима в шапке */
-.a11y-toggle-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    border: 1px solid rgba(255,255,255,0.4);
-    background: transparent;
-    color: #e5e7eb;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-}
-.a11y-toggle-btn:hover {
-    background: rgba(255,255,255,0.15);
-    border-color: rgba(255,255,255,0.6);
-    color: #fff;
-}
+/* a11y toggle: base in theme.css; active state */
 .a11y-toggle-btn.active {
-    background: rgba(59, 130, 246, 0.5);
-    border-color: #93c5fd;
+    background: var(--brand-primary);
+    border-color: var(--brand-primary);
     color: #fff;
 }

@@ -11,397 +11,169 @@
     var errorMessage = ViewBag.ErrorMessage as string;
 }
 
-<style>
-    /* --- Hero Section --- */
-    .hero-section {
-        background: var(--bg-body);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 2.5rem;
-        margin-bottom: 2rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-
-    .hero-title {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--text-body);
-        margin-bottom: 0.5rem;
-        letter-spacing: -0.025em;
-    }
-
-    .hero-subtitle {
-        color: var(--text-muted);
-        font-size: 1.1rem;
-        max-width: 700px;
-        line-height: 1.6;
-    }
-
-    /* --- Stat Cards --- */
-    .stat-card {
-        background: var(--bg-body);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 1.5rem;
-        height: 100%;
-        transition: border-color 0.2s, box-shadow 0.2s;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-        .stat-card:hover {
-            border-color: var(--accent-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-    .stat-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1rem;
-    }
-
-    .stat-icon-wrapper {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-    }
-
-    .icon-ate {
-        background-color: #eff6ff;
-        color: var(--color-ate);
-    }
-
-    .icon-air {
-        background-color: #ecfdf5;
-        color: var(--color-air);
-    }
-
-    .icon-rw {
-        background-color: #fffbeb;
-        color: var(--color-rw);
-    }
-
-    .icon-fgo {
-        background-color: #ecfeff;
-        color: var(--color-fgo);
-    }
-
-    /* Тёмная тема: пастель + наследованный светлый текст = невидимый глиф; тёмная «пилюля» + светлая иконка */
-    html[data-theme="dark"] .stat-icon-wrapper.icon-ate,
-    html[data-bs-theme="dark"] .stat-icon-wrapper.icon-ate {
-        background-color: rgba(37, 99, 235, 0.22);
-        color: #93c5fd;
-    }
-
-    html[data-theme="dark"] .stat-icon-wrapper.icon-air,
-    html[data-bs-theme="dark"] .stat-icon-wrapper.icon-air {
-        background-color: rgba(16, 185, 129, 0.2);
-        color: #6ee7b7;
-    }
-
-    html[data-theme="dark"] .stat-icon-wrapper.icon-rw,
-    html[data-bs-theme="dark"] .stat-icon-wrapper.icon-rw {
-        background-color: rgba(245, 158, 11, 0.2);
-        color: #fcd34d;
-    }
-
-    html[data-theme="dark"] .stat-icon-wrapper.icon-fgo,
-    html[data-bs-theme="dark"] .stat-icon-wrapper.icon-fgo {
-        background-color: rgba(6, 182, 212, 0.2);
-        color: #67e8f9;
-    }
-
-    .stat-value {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--text-body);
-        line-height: 1;
-        margin-bottom: 0.25rem;
-    }
-
-    .stat-label {
-        font-size: 0.875rem;
-        color: var(--text-muted);
-        font-weight: 500;
-    }
-
-    /* --- Section Headers --- */
-    .section-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--text-body);
-    }
-
-    /* --- Navigation Cards --- */
-    .nav-card {
-        display: flex;
-        align-items: center;
-        padding: 1.25rem;
-        background: var(--bg-body);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        text-decoration: none;
-        color: var(--text-body);
-        transition: all 0.2s ease;
-        height: 100%; /* Для одинаковой высоты в сетке */
-    }
-
-        .nav-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent-color);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-    .nav-card-icon {
-        font-size: 1.5rem;
-        margin-right: 1rem;
-        color: var(--text-secondary);
-        transition: color 0.2s;
-    }
-
-    .nav-card:hover .nav-card-icon {
-        color: var(--accent-color);
-    }
-
-    .nav-card-content {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .nav-card-title {
-        font-weight: 600;
-        font-size: 1rem;
-    }
-
-    .nav-card-desc {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-    }
-
-    /* --- Content Card (Info) --- */
-    .content-card {
-        background: var(--bg-body);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        overflow: hidden;
-        height: 100%;
-    }
-
-    .feature-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-            .feature-list li i {
-                color: var(--accent-color);
-                margin-top: 3px;
-            }
-
-    .btn-link-custom {
-        color: var(--accent-color);
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 0.9rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-
-        .btn-link-custom:hover {
-            text-decoration: underline;
-        }
-
-    @@media (max-width: 768px) {
-        .hero-section {
-            padding: 1.5rem;
-        }
-
-        .hero-title {
-            font-size: 1.5rem;
-        }
-    }
-</style>
-
-<div class="container-fluid px-4 py-4">
-
-    <!-- Hero Section -->
-    <div class="hero-section">
-        <div class="row align-items-center g-3">
-            <div class="col-lg-8">
-                <h1 class="hero-title">Государственный каталог географических объектов</h1>
-                <p class="hero-subtitle">
-                    Единая информационная система учета, регистрации и хранения сведений о наименованиях географических объектов Республики Беларусь.
-                </p>
-            </div>
-            <div class="col-lg-4 d-flex justify-content-lg-end align-items-start">
-                <a asp-controller="Account"
-                   asp-action="Login"
-                   asp-route-returnUrl="@Url.Content("~/Admin")"
-                   class="btn btn-outline-primary px-4 py-2 shadow-sm">
-                    <i class="bi bi-shield-lock me-2" aria-hidden="true"></i>Вход в админ-панель
-                </a>
-            </div>
+<section class="gc-hero">
+    <div class="gc-hero-inner">
+        <span class="gc-hero-badge">Государственный информационный ресурс</span>
+        <h1 class="gc-hero-title">Каталог наименований географических объектов Республики Беларусь</h1>
+        <p class="gc-hero-lead">
+            Единая система учёта, регистрации и предоставления достоверных сведений о наименованиях географических объектов — для организаций и граждан.
+        </p>
+        <div class="gc-hero-actions">
+            <a asp-controller="Catalog" asp-action="Index" class="btn btn-gc-primary">
+                <i class="bi bi-search me-2" aria-hidden="true"></i>Начать поиск
+            </a>
+            <a asp-controller="Home" asp-action="About" class="btn btn-gc-outline">
+                О проекте
+            </a>
         </div>
     </div>
+</section>
+
+<section class="gc-pillars" aria-label="Принципы каталога">
+    <div class="gc-pillars-inner">
+        <article class="gc-pillar">
+            <div class="gc-pillar-num">1</div>
+            <h3>Достоверные данные</h3>
+            <p>Актуальные, нормализованные сведения о наименованиях на русском и белорусском языках, координатах и кодах СОАТО.</p>
+        </article>
+        <article class="gc-pillar">
+            <div class="gc-pillar-num">2</div>
+            <h3>Единый реестр</h3>
+            <p>Населённые пункты, аэропорты, объекты железнодорожной инфраструктуры и физико-географические объекты в одном каталоге.</p>
+        </article>
+        <article class="gc-pillar">
+            <div class="gc-pillar-num">3</div>
+            <h3>Для специалистов и граждан</h3>
+            <p>Поиск, фильтрация, экспорт в CSV и PDF — удобный доступ к пространственным данным о местности.</p>
+        </article>
+    </div>
+</section>
+
+<div class="gc-page fade-in">
 
     @if (!string.IsNullOrEmpty(errorMessage))
     {
         <div class="alert alert-danger border-0 shadow-sm mb-4 d-flex align-items-center" role="alert">
-            <i class="bi bi-exclamation-circle-fill me-2"></i>
+            <i class="bi bi-exclamation-circle-fill me-2" aria-hidden="true"></i>
             <div>@errorMessage</div>
-            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Закрыть"></button>
         </div>
     }
 
-    <!-- Statistics Cards -->
-    <div class="row g-4 mb-5">
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon-wrapper icon-ate">
-                        <i class="bi bi-geo-alt-fill"></i>
-                    </div>
+    <section class="mb-5" aria-labelledby="stats-heading">
+        <h2 id="stats-heading" class="gc-section-title visually-hidden">Статистика каталога</h2>
+        <div class="row g-3 g-lg-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="gc-stat-card">
+                    <div class="gc-stat-icon ate"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i></div>
+                    <div class="gc-stat-value">@totalATE.ToString("N0")</div>
+                    <div class="gc-stat-label">Населённых пунктов</div>
                 </div>
-                <div>
-                    <div class="stat-value">@totalATE.ToString("N0")</div>
-                    <div class="stat-label">Населенных пунктов</div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="gc-stat-card">
+                    <div class="gc-stat-icon air"><i class="bi bi-airplane-fill" aria-hidden="true"></i></div>
+                    <div class="gc-stat-value">@totalAirports.ToString("N0")</div>
+                    <div class="gc-stat-label">Аэропортов</div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="gc-stat-card">
+                    <div class="gc-stat-icon rw"><i class="bi bi-train-front-fill" aria-hidden="true"></i></div>
+                    <div class="gc-stat-value">@totalRailway.ToString("N0")</div>
+                    <div class="gc-stat-label">Ж/Д объектов</div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="gc-stat-card">
+                    <div class="gc-stat-icon fgo"><i class="bi bi-water" aria-hidden="true"></i></div>
+                    <div class="gc-stat-value">@totalFGO.ToString("N0")</div>
+                    <div class="gc-stat-label">Физ.-геогр. объектов</div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon-wrapper icon-air">
-                        <i class="bi bi-airplane-fill"></i>
-                    </div>
-                </div>
-                <div>
-                    <div class="stat-value">@totalAirports.ToString("N0")</div>
-                    <div class="stat-label">Аэропортов</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon-wrapper icon-rw">
-                        <i class="bi bi-train-front-fill"></i>
-                    </div>
-                </div>
-                <div>
-                    <div class="stat-value">@totalRailway.ToString("N0")</div>
-                    <div class="stat-label">Ж/Д объектов</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon-wrapper icon-fgo">
-                        <i class="bi bi-water"></i>
-                    </div>
-                </div>
-                <div>
-                    <div class="stat-value">@totalFGO.ToString("N0")</div>
-                    <div class="stat-label">Физ.-геогр. объектов</div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </section>
 
-    <!-- Main Content Grid -->
-    <div class="row g-4">
-        <!-- Left Column: Navigation Registries -->
-        <div class="col-lg-6">
-            <h2 class="section-title"><i class="bi bi-grid-fill"></i> Реестры каталога</h2>
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <a href="@Url.Action("Index", "Catalog", new { ObjectType = "ATE" })" class="nav-card">
-                        <i class="bi bi-geo-alt-fill nav-card-icon"></i>
-                        <div class="nav-card-content">
-                            <span class="nav-card-title">Населенные пункты</span>
-                            <span class="nav-card-desc">Реестр АТЕ и ТЕ</span>
-                        </div>
+    <section class="mb-5" aria-labelledby="registries-heading">
+        <h2 id="registries-heading" class="gc-section-title"><i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i> Реестры каталога</h2>
+        <div class="row g-3 g-lg-4">
+            <div class="col-md-6 col-lg-3">
+                <a href="@Url.Action("Index", "Catalog", new { ObjectType = "ATE" })" class="gc-service-card">
+                    <div class="gc-service-card-icon ate gc-stat-icon ate mb-0"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i></div>
+                    <h3>Населённые пункты</h3>
+                    <p>Административно-территориальные единицы: города, посёлки, деревни.</p>
+                    <span class="gc-service-card-link">Открыть реестр <i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <a href="@Url.Action("Index", "Catalog", new { ObjectType = "AIR" })" class="gc-service-card">
+                    <div class="gc-service-card-icon air gc-stat-icon air mb-0"><i class="bi bi-airplane-fill" aria-hidden="true"></i></div>
+                    <h3>Аэропорты</h3>
+                    <p>Аэропорты и аэродромы воздушного транспорта Республики Беларусь.</p>
+                    <span class="gc-service-card-link">Открыть реестр <i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <a href="@Url.Action("Index", "Catalog", new { ObjectType = "RW" })" class="gc-service-card">
+                    <div class="gc-service-card-icon rw gc-stat-icon rw mb-0"><i class="bi bi-train-front-fill" aria-hidden="true"></i></div>
+                    <h3>Железная дорога</h3>
+                    <p>Станции, остановочные пункты и объекты железнодорожной инфраструктуры.</p>
+                    <span class="gc-service-card-link">Открыть реестр <i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <a href="@Url.Action("Index", "Catalog", new { ObjectType = "FGO" })" class="gc-service-card">
+                    <div class="gc-service-card-icon fgo gc-stat-icon fgo mb-0"><i class="bi bi-water" aria-hidden="true"></i></div>
+                    <h3>Природные объекты</h3>
+                    <p>Реки, озёра, горы и другие физико-географические объекты.</p>
+                    <span class="gc-service-card-link">Открыть реестр <i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="row g-4" aria-labelledby="about-heading">
+        <div class="col-lg-7">
+            <h2 id="about-heading" class="gc-section-title"><i class="bi bi-info-circle-fill" aria-hidden="true"></i> О системе</h2>
+            <div class="gc-content-card">
+                <p class="mb-4">
+                    Государственный каталог наименований географических объектов — электронный информационный ресурс ГП «Белгеодезия», содержащий актуальные сведения о наименованиях географических объектов Республики Беларусь.
+                </p>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h3 class="h6 fw-bold mb-3">Возможности</h3>
+                        <ul class="gc-feature-list">
+                            <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Поиск на русском и белорусском</li>
+                            <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Фильтрация по регионам и типам</li>
+                            <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Экспорт в CSV и PDF</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h3 class="h6 fw-bold mb-3">Нормативная база</h3>
+                        <ul class="gc-feature-list">
+                            <li><i class="bi bi-file-earmark-text-fill" aria-hidden="true"></i> Закон «О наименованиях географических объектов»</li>
+                            <li><i class="bi bi-file-earmark-text-fill" aria-hidden="true"></i> Инструкции ГКИ Республики Беларусь</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-top">
+                    <a href="@Url.Action("About", "Home")" class="gc-link-arrow">
+                        Подробнее о проекте <i class="bi bi-arrow-right" aria-hidden="true"></i>
                     </a>
                 </div>
-                <div class="col-md-6">
-                    <a href="@Url.Action("Index", "Catalog", new { ObjectType = "AIR" })" class="nav-card">
-                        <i class="bi bi-airplane-fill nav-card-icon"></i>
-                        <div class="nav-card-content">
-                            <span class="nav-card-title">Аэропорты</span>
-                            <span class="nav-card-desc">Воздушный транспорт</span>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-md-6">
-                    <a href="@Url.Action("Index", "Catalog", new { ObjectType = "RW" })" class="nav-card">
-                        <i class="bi bi-train-front-fill nav-card-icon"></i>
-                        <div class="nav-card-content">
-                            <span class="nav-card-title">Железная дорога</span>
-                            <span class="nav-card-desc">Станции и пути</span>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-md-6">
-                    <a href="@Url.Action("Index", "Catalog", new { ObjectType = "FGO" })" class="nav-card">
-                        <i class="bi bi-water nav-card-icon"></i>
-                        <div class="nav-card-content">
-                            <span class="nav-card-title">Природные объекты</span>
-                            <span class="nav-card-desc">Гидрография и ландшафт</span>
-                        </div>
-                    </a>
-                </div>
             </div>
         </div>
-
-        <!-- Right Column: System Info -->
-        <div class="col-lg-6">
-            <h2 class="section-title"><i class="bi bi-info-circle-fill"></i> О системе</h2>
-            <div class="content-card">
-                <div class="p-4">
-                    <p class="mb-4">
-                        Государственный каталог наименований географических объектов — это электронный информационный ресурс, содержащий актуальные, нормализованные сведения о наименованиях географических объектов Республики Беларусь.
-                    </p>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6 class="fw-bold mb-3">Функциональные возможности</h6>
-                            <ul class="feature-list">
-                                <li><i class="bi bi-check-circle-fill"></i> Поиск на русском и белорусском</li>
-                                <li><i class="bi bi-check-circle-fill"></i> Фильтрация по регионам</li>
-                                <li><i class="bi bi-check-circle-fill"></i> Экспорт в печатные формы и таблицы</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="fw-bold mb-3">Нормативная база</h6>
-                            <ul class="feature-list">
-                                <li><i class="bi bi-file-earmark-text-fill"></i> Закон «О наименованиях географических объектов»</li>
-                                <li><i class="bi bi-file-earmark-text-fill"></i> Инструкции ГКИ РБ</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 pt-3 border-top">
-                        <a href="@Url.Action("About", "Home")" class="btn-link-custom">
-                            Подробнее о проекте и обмене данными <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
+        <div class="col-lg-5">
+            <h2 class="gc-section-title"><i class="bi bi-shield-lock-fill" aria-hidden="true"></i> Администрирование</h2>
+            <div class="gc-content-card d-flex flex-column h-100">
+                <p class="text-muted mb-4">Вход для сотрудников, осуществляющих ведение и актуализацию данных каталога.</p>
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   asp-route-returnUrl="@Url.Content("~/Admin")"
+                   class="btn btn-gc-primary mt-auto align-self-start">
+                    <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></i>Вход в админ-панель
+                </a>
             </div>
         </div>
-    </div>
+    </section>
 </div>

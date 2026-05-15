@@ -10,6 +10,8 @@
     var ateDistrictDisabled = !Model.RegionId.HasValue || regionIdsNoDistrict.Contains(Model.RegionId.Value);
 }
 
+<div class="gc-page fade-in">
+
 <nav aria-label="Навигационная цепочка" class="mb-3">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-action="Index">Админ-панель</a></li>
@@ -174,6 +176,8 @@
         </div>
     </div>
 </form>
+
+</div>
 
 <script type="application/json" id="ate-region-ids-no-district">@Html.Raw(JsonSerializer.Serialize(regionIdsNoDistrict))</script>
 

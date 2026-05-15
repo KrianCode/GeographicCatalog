@@ -3,416 +3,131 @@
     Layout = "_Layout";
 }
 
-<style>
-    /* --- Hero Section --- */
-    .hero-section {
-        background: var(--color-bg-elevated);
-        border: 1px solid var(--color-border-soft);
-        border-radius: 12px;
-        padding: 2.5rem;
-        margin-bottom: 2rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
+<div class="gc-page pb-5 fade-in">
 
-    .hero-title {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--color-text);
-        margin-bottom: 0.5rem;
-        letter-spacing: -0.025em;
-    }
-
-    .hero-subtitle {
-        color: var(--color-text-muted);
-        font-size: 1.1rem;
-        max-width: 700px;
-        line-height: 1.6;
-    }
-
-    /* --- Cards --- */
-    .content-card {
-        background: var(--color-bg-elevated);
-        border: 1px solid var(--color-border-soft);
-        border-radius: 12px;
-        padding: 1.5rem;
-        transition: all 0.2s ease;
-    }
-
-        .content-card:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-    .section-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        color: var(--primary-color);
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid var(--color-border-soft);
-    }
-
-        .section-title i {
-            color: var(--primary-color);
-            font-size: 1.25rem;
-        }
-
-    /* --- Lists --- */
-    .feature-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-        .feature-list li {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-            color: var(--color-text);
-            line-height: 1.5;
-        }
-
-            .feature-list li:last-child {
-                margin-bottom: 0;
-            }
-
-            .feature-list li i {
-                color: var(--success-color);
-                margin-top: 3px;
-                flex-shrink: 0;
-            }
-
-    .legal-list li i {
-        color: var(--warning-color);
-    }
-
-    /* --- Tech Stack Grid --- */
-    .tech-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 1rem;
-    }
-
-    .tech-item {
-        background: var(--color-bg);
-        border: 1px solid var(--color-border-soft);
-        border-radius: 8px;
-        padding: 1rem;
-        text-align: center;
-        transition: all 0.2s;
-    }
-
-        .tech-item:hover {
-            background: var(--color-bg-elevated);
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-
-    .tech-icon {
-        font-size: 1.5rem;
-        color: var(--color-text-muted);
-        margin-bottom: 0.5rem;
-    }
-
-    .tech-item:hover .tech-icon {
-        color: var(--primary-color);
-    }
-
-    .tech-name {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--primary-color);
-        display: block;
-    }
-
-    .tech-role {
-        font-size: 0.7rem;
-        color: var(--color-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    /* --- Alert Box --- */
-    .info-box {
-        background: var(--color-bg-elevated);
-        border: 1px solid var(--color-border-soft);
-        border-radius: 12px;
-        padding: 1.25rem;
-        display: flex;
-        gap: 1rem;
-        align-items: flex-start;
-    }
-
-        .info-box i {
-            color: var(--primary-color);
-            font-size: 1.25rem;
-        }
-
-    .info-box-content strong {
-        display: block;
-        color: var(--primary-color);
-        font-size: 0.95rem;
-        margin-bottom: 0.25rem;
-    }
-
-    .info-box-content p {
-        margin: 0;
-        color: var(--color-text);
-        font-size: 0.9rem;
-    }
-
-    /* --- Buttons --- */
-    .action-bar {
-        margin-top: 2rem;
-        display: flex;
-        gap: 1rem;
-    }
-
-    .btn-custom {
-        padding: 0.6rem 1.25rem;
-        border-radius: 8px;
-        font-weight: 500;
-        font-size: 0.95rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: all 0.2s;
-        text-decoration: none;
-    }
-
-    .btn-primary-custom {
-        background-color: var(--primary-color);
-        color: #fff;
-        border: 1px solid var(--primary-color);
-    }
-
-        .btn-primary-custom:hover {
-            background-color: var(--primary-color);
-            opacity: 0.9;
-            color: #fff;
-            transform: translateY(-1px);
-        }
-
-    .btn-outline-custom {
-        background-color: transparent;
-        color: var(--color-text);
-        border: 1px solid var(--color-border-soft);
-    }
-
-        .btn-outline-custom:hover {
-            border-color: var(--primary-color);
-            background-color: var(--color-bg-elevated);
-            color: var(--color-text);
-        }
-
-    /* --- Dark Theme Fixes --- */
-    html[data-theme="dark"] .hero-section {
-        background: var(--color-bg-elevated) !important;
-        border-color: var(--color-border-soft) !important;
-    }
-
-    html[data-theme="dark"] .content-card {
-        background: var(--color-bg-elevated) !important;
-        border-color: var(--color-border-soft) !important;
-    }
-
-    html[data-theme="dark"] .tech-item {
-        background: var(--color-bg) !important;
-        border-color: var(--color-border-soft) !important;
-    }
-
-        html[data-theme="dark"] .tech-item:hover {
-            background: var(--color-bg-elevated) !important;
-        }
-
-    html[data-theme="dark"] .info-box {
-        background: var(--color-bg-elevated) !important;
-        border-color: var(--color-border-soft) !important;
-    }
-
-    html[data-theme="dark"] .info-box-content strong {
-        color: var(--primary-color) !important;
-    }
-
-    html[data-theme="dark"] .info-box-content p {
-        color: var(--color-text) !important;
-    }
-
-    html[data-theme="dark"] .text-secondary {
-        color: var(--color-text-muted) !important;
-    }
-
-    html[data-theme="dark"] .badge.bg-success {
-        background-color: var(--success-color) !important;
-    }
-
-    html[data-theme="dark"] .btn-outline-custom {
-        border-color: var(--color-border-soft) !important;
-        color: var(--color-text) !important;
-    }
-
-        html[data-theme="dark"] .btn-outline-custom:hover {
-            background-color: var(--color-bg-elevated) !important;
-            border-color: var(--primary-color) !important;
-        }
-
-    @@media (max-width: 768px) {
-        .hero-section {
-            padding: 1.5rem;
-        }
-
-        .hero-title {
-            font-size: 1.5rem;
-        }
-
-        .tech-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-</style>
-
-<!-- Добавлен класс pb-5 и mb-5 для отступа от футера -->
-<div class="container-fluid px-4 py-4 pb-5 mb-5">
-
-    <!-- Hero Section -->
-    <div class="hero-section">
+    <div class="gc-page-hero gc-page-hero--accent">
         <div class="row align-items-center">
             <div class="col-lg-8">
-                <h1 class="hero-title">О проекте</h1>
-                <p class="hero-subtitle">
-                    Государственный каталог наименований географических объектов Республики Беларусь — цифровая платформа для стандартизации и учета топонимических данных.
+                <h1>О проекте</h1>
+                <p class="lead">
+                    Государственный каталог наименований географических объектов Республики Беларусь — цифровая платформа для стандартизации и учёта топонимических данных.
                 </p>
             </div>
             <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill" style="background: var(--color-bg-elevated); border: 1px solid var(--color-border-soft);">
-                    <span class="badge bg-success rounded-circle p-1"> </span>
-                    <span class="small fw-medium" style="color: var(--color-text-muted);">Версия системы 1.0</span>
+                <div class="gc-version-pill">
+                    <span class="gc-status-dot" aria-hidden="true"></span>
+                    <span>Версия системы 1.0</span>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row g-4">
-        <!-- Left Column: Description & Legal -->
         <div class="col-lg-7 d-flex flex-column gap-4">
-            <!-- General Info -->
-            <div class="content-card h-100">
-                <h2 class="section-title">
-                    <i class="bi bi-file-text"></i> Общее описание
+            <div class="gc-about-card">
+                <h2 class="gc-about-section-title">
+                    <i class="bi bi-file-text" aria-hidden="true"></i> Общее описание
                 </h2>
-                <p class="mb-3" style="color: var(--color-text);">
+                <p class="mb-3">
                     Данная система представляет собой централизованный веб-ресурс, обеспечивающий сбор, хранение, обработку и предоставление информации о наименованиях географических объектов.
                 </p>
-                <p class="mb-0" style="color: var(--color-text);">
+                <p class="mb-0 text-muted">
                     Каталог служит эталонным источником информации для создания карт, издания словарей и справочников, а также использования наименований в нормативных правовых актах, средствах массовой информации и учебных изданиях.
                 </p>
             </div>
 
-            <!-- Legal Basis -->
-            <div class="content-card h-100">
-                <h2 class="section-title">
-                    <i class="bi bi-journal-bookmark"></i> Правовая основа
+            <div class="gc-about-card">
+                <h2 class="gc-about-section-title">
+                    <i class="bi bi-journal-bookmark" aria-hidden="true"></i> Правовая основа
                 </h2>
-                <ul class="feature-list legal-list">
+                <ul class="gc-feature-list legal-list">
                     <li>
-                        <i class="bi bi-file-earmark-text"></i>
-                        <span style="color: var(--color-text);">Закон Республики Беларусь «О наименованиях географических объектов»</span>
+                        <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                        <span>Закон Республики Беларусь «О наименованиях географических объектов»</span>
                     </li>
                     <li>
-                        <i class="bi bi-file-earmark-text"></i>
-                        <span style="color: var(--color-text);">Инструкция о порядке государственного учета наименований географических объектов</span>
+                        <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                        <span>Инструкция о порядке государственного учёта наименований географических объектов</span>
                     </li>
                     <li>
-                        <i class="bi bi-file-earmark-text"></i>
-                        <span style="color: var(--color-text);">Постановления Государственного комитета по имуществу Республики Беларусь</span>
+                        <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                        <span>Постановления Государственного комитета по имуществу Республики Беларусь</span>
                     </li>
                 </ul>
             </div>
         </div>
 
-        <!-- Right Column: Features & Tech -->
         <div class="col-lg-5 d-flex flex-column gap-4">
-            <!-- Features -->
-            <div class="content-card h-100">
-                <h2 class="section-title">
-                    <i class="bi bi-stars"></i> Ключевые возможности
+            <div class="gc-about-card">
+                <h2 class="gc-about-section-title">
+                    <i class="bi bi-stars" aria-hidden="true"></i> Ключевые возможности
                 </h2>
-                <ul class="feature-list">
+                <ul class="gc-feature-list">
                     <li>
-                        <i class="bi bi-check-circle-fill"></i>
-                        <span style="color: var(--color-text);">Двуязычный поиск (русский/белорусский)</span>
+                        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                        <span>Двуязычный поиск (русский / белорусский)</span>
                     </li>
                     <li>
-                        <i class="bi bi-check-circle-fill"></i>
-                        <span style="color: var(--color-text);">Классификация по типам (АТЕ, Ж/Д, Гидрография)</span>
+                        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                        <span>Классификация по типам (АТЕ, Ж/Д, гидрография)</span>
                     </li>
                     <li>
-                        <i class="bi bi-check-circle-fill"></i>
-                        <span style="color: var(--color-text);">Экспорт данных в машиночитаемые форматы</span>
+                        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                        <span>Экспорт данных в машиночитаемые форматы</span>
                     </li>
                     <li>
-                        <i class="bi bi-check-circle-fill"></i>
-                        <span style="color: var(--color-text);">История изменений наименований</span>
+                        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                        <span>История изменений наименований</span>
                     </li>
                 </ul>
             </div>
 
-            <!-- Tech Stack -->
-            <div class="content-card h-100">
-                <h2 class="section-title">
-                    <i class="bi bi-code-square"></i> Технологии
+            <div class="gc-about-card">
+                <h2 class="gc-about-section-title">
+                    <i class="bi bi-code-square" aria-hidden="true"></i> Технологии
                 </h2>
-                <div class="tech-grid">
-                    <div class="tech-item">
-                        <i class="bi bi-microsoft tech-icon"></i>
-                        <span class="tech-name">Веб-платформа (8-я версия)</span>
-                        <span class="tech-role">Серверная часть</span>
+                <div class="gc-tech-grid">
+                    <div class="gc-tech-item">
+                        <i class="bi bi-microsoft gc-tech-icon" aria-hidden="true"></i>
+                        <span class="gc-tech-name">ASP.NET Core 8</span>
+                        <span class="gc-tech-role">Серверная часть</span>
                     </div>
-                    <div class="tech-item">
-                        <i class="bi bi-database tech-icon"></i>
-                        <span class="tech-name">Сервер базы данных</span>
-                        <span class="tech-role">Хранение данных</span>
+                    <div class="gc-tech-item">
+                        <i class="bi bi-database gc-tech-icon" aria-hidden="true"></i>
+                        <span class="gc-tech-name">PostgreSQL</span>
+                        <span class="gc-tech-role">Хранение данных</span>
                     </div>
-                    <div class="tech-item">
-                        <i class="bi bi-bootstrap tech-icon"></i>
-                        <span class="tech-name">Оформление интерфейса (5-я версия набора стилей)</span>
-                        <span class="tech-role">Оформление интерфейса</span>
+                    <div class="gc-tech-item">
+                        <i class="bi bi-bootstrap gc-tech-icon" aria-hidden="true"></i>
+                        <span class="gc-tech-name">Bootstrap 5</span>
+                        <span class="gc-tech-role">Интерфейс</span>
                     </div>
-                    <div class="tech-item">
-                        <i class="bi bi-layers tech-icon"></i>
-                        <span class="tech-name">Подсистема доступа к базе данных</span>
-                        <span class="tech-role">Доступ к данным</span>
+                    <div class="gc-tech-item">
+                        <i class="bi bi-layers gc-tech-icon" aria-hidden="true"></i>
+                        <span class="gc-tech-name">Entity Framework</span>
+                        <span class="gc-tech-role">Доступ к данным</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer / Actions -->
     <div class="row mt-4">
         <div class="col-12">
-            <div class="info-box mb-4">
-                <i class="bi bi-info-circle-fill"></i>
-                <div class="info-box-content">
+            <div class="gc-info-box mb-4">
+                <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+                <div>
                     <strong>Планы развития</strong>
                     <p>Во втором квартале текущего года запланирована интеграция с публичной кадастровой картой для визуализации границ объектов.</p>
                 </div>
             </div>
 
-            <div class="action-bar">
-                <a href="@Url.Action("Index", "Home")" class="btn-custom btn-outline-custom">
-                    <i class="bi bi-arrow-left"></i> На главную
+            <div class="gc-action-bar">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-gc-outline">
+                    <i class="bi bi-arrow-left me-1" aria-hidden="true"></i> На главную
                 </a>
-                <a href="@Url.Action("Index", "Catalog")" class="btn-custom btn-primary-custom">
-                    Перейти в каталог <i class="bi bi-arrow-right"></i>
+                <a href="@Url.Action("Index", "Catalog")" class="btn btn-gc-primary">
+                    Перейти в каталог <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
                 </a>
             </div>
         </div>

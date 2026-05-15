@@ -5,327 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ГеоКаталог Беларуси</title>
 
-    <!-- Google Fonts (Inter) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- Стили сайта -->
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <!-- Версия для слабовидящих -->
     <link rel="stylesheet" href="~/css/accessibility.css" asp-append-version="true" />
-    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="~/favicon.ico">
-
-    <style>
-        :root {
-            /* Enterprise Palette */
-            --primary-dark: #0f172a; /* Slate 900 - Main Header/Footer */
-            --primary-light: #1e293b; /* Slate 800 - Hover states */
-            --accent-color: #2563eb; /* Blue 600 - Actions */
-            --text-body: #0f172a; /* Slate 900 — основной текст */
-            --text-muted: #64748b; /* Slate 500 — вторичный, заметнее фона */
-            --text-secondary: #64748b; /* Иконки на карточках (главная, каталог) */
-            --bg-body: #f8fafc; /* Slate 50 */
-            --border-color: #e2e8f0; /* Slate 200 */
-            /* Иконки статистики на светлых плашках (главная) */
-            --color-ate: #1d4ed8;
-            --color-air: #047857;
-            --color-rw: #b45309;
-            --color-fgo: #0e7490;
-        }
-
-        /* Dark theme overrides */
-        html[data-theme="dark"] {
-            --primary-dark: #020617; /* Slate 950 */
-            --primary-light: #0f172a; /* Чуть светлее панели поиска */
-            --accent-color: #3b82f6;  /* Slightly brighter accent */
-            --text-body: #f8fafc;     /* Почти белый основной текст */
-            --text-muted: #cbd5e1;    /* Slate 300 — читаемый вторичный */
-            --text-secondary: #cbd5e1;
-            --bg-body: #020617;       /* Overall background */
-            --border-color: #334155;  /* Dark border, заметнее на фоне */
-            /* Те же ключи: на пастельном фоне плашек нужны тёмные, не наследованные светлые */
-            --color-ate: #1d4ed8;
-            --color-air: #047857;
-            --color-rw: #b45309;
-            --color-fgo: #0e7490;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-body);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* --- Navbar: Строгий стиль --- */
-        .navbar-enterprise {
-            background-color: var(--primary-dark);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding: 1rem 0; /* Увеличил вертикальный отступ навбара */
-        }
-
-        .navbar-brand {
-            font-weight: 600;
-            font-size: 1.1rem;
-            letter-spacing: -0.025em;
-            margin-right: 2rem; /* Отступ справа от логотипа */
-        }
-
-        .brand-subtitle {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: block;
-            line-height: 1;
-            margin-top: 2px;
-        }
-
-        /* Увеличенные отступы для ссылок */
-        .navbar-nav .nav-item {
-            margin-right: 0.5rem; /* Отступ между элементами меню */
-        }
-
-        .nav-link {
-            color: #cbd5e1 !important; /* Slate 300 */
-            font-size: 0.95rem; /* Чуть крупнее шрифт */
-            font-weight: 500;
-            padding: 0.6rem 1rem !important; /* Увеличенный внутренний отступ */
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-
-            .nav-link:hover, .nav-link.active {
-                color: #fff !important;
-                background-color: rgba(255,255,255,0.1);
-            }
-
-            .nav-link i {
-                margin-right: 0.4rem;
-                opacity: 0.8;
-            }
-
-        /* Search Input */
-        .search-group {
-            position: relative;
-            margin-left: 1rem; /* Отступ слева от поиска */
-        }
-
-        .nav-search-input {
-            background-color: var(--primary-light);
-            border: 1px solid #334155;
-            color: #fff;
-            font-size: 0.9rem;
-            padding: 0.5rem 0.75rem 0.5rem 2.2rem; /* Чуть больше padding */
-            border-radius: 6px;
-            width: 260px; /* Чуть шире */
-            transition: border-color 0.2s, width 0.2s;
-        }
-
-            .nav-search-input::placeholder {
-                color: #64748b;
-            }
-
-            .nav-search-input:focus {
-                background-color: var(--primary-light);
-                border-color: var(--accent-color);
-                color: #fff;
-                box-shadow: none;
-                width: 300px;
-            }
-
-        .search-icon-overlay {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #64748b;
-            font-size: 0.9rem;
-            pointer-events: none;
-        }
-
-        /* Dropdown */
-        .dropdown-menu {
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 0.5rem;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-
-        .dropdown-item {
-            border-radius: 4px;
-            padding: 0.6rem 1.2rem; /* Больше отступы в выпадающем меню */
-            color: var(--text-body);
-        }
-
-            .dropdown-item:hover {
-                background-color: #f1f5f9;
-                color: var(--primary-dark);
-            }
-
-            .dropdown-item i {
-                color: var(--text-muted);
-                margin-right: 0.75rem; /* Больше отступ от иконки */
-                width: 16px;
-                text-align: center;
-            }
-
-            .dropdown-item:hover i {
-                color: var(--accent-color);
-            }
-
-        html[data-theme="dark"] .dropdown-menu {
-            background-color: #0f172a;
-            border-color: var(--border-color);
-        }
-
-        html[data-theme="dark"] .dropdown-item {
-            color: var(--text-body);
-        }
-
-            html[data-theme="dark"] .dropdown-item:hover {
-                background-color: #1e293b;
-                color: #f8fafc;
-            }
-
-            html[data-theme="dark"] .dropdown-item:hover i {
-                color: var(--accent-color);
-            }
-
-        /* --- Main Content --- */
-        main {
-            flex: 1;
-        }
-
-        /* --- Footer --- */
-        .footer-enterprise {
-            background-color: var(--primary-dark);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            padding-top: 3rem;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            margin-top: auto;
-        }
-
-        .footer-heading {
-            color: #fff;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-        }
-
-        .footer-link {
-            color: var(--text-muted);
-            text-decoration: none;
-            display: block;
-            margin-bottom: 0.5rem;
-            transition: color 0.2s;
-        }
-
-            .footer-link:hover {
-                color: #fff;
-                text-decoration: underline;
-            }
-
-        .footer-enterprise > div.py-3 .small {
-            opacity: 1 !important;
-            color: #cbd5e1;
-        }
-
-        /* --- Alerts (Flat Style) --- */
-        .alert-enterprise {
-            border: 1px solid var(--border-color);
-            border-left-width: 4px;
-            border-radius: 4px;
-            background-color: var(--bg-body);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-            padding: 1rem 1.25rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-body);
-        }
-
-        .alert-enterprise-danger {
-            border-color: #fecaca;
-            border-left-color: #dc2626;
-            color: #991b1b;
-            background-color: #fef2f2;
-        }
-
-        .alert-enterprise-success {
-            border-color: #bbf7d0;
-            border-left-color: #16a34a;
-            color: #166534;
-            background-color: #f0fdf4;
-        }
-
-        html[data-theme="dark"] .alert-enterprise-danger {
-            background-color: #450a0a;
-            border-color: #7f1d1d;
-            border-left-color: #f87171;
-            color: #fecaca;
-        }
-
-        html[data-theme="dark"] .alert-enterprise-success {
-            background-color: #052e16;
-            border-color: #14532d;
-            border-left-color: #4ade80;
-            color: #bbf7d0;
-        }
-
-        /* Mobile Toggler */
-        .navbar-toggler {
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 0.25rem 0.5rem;
-        }
-
-            .navbar-toggler:focus {
-                box-shadow: none;
-            }
-
-        /* Theme toggle button */
-        .theme-toggle-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 2.25rem;
-            height: 2.25rem;
-            border-radius: 999px;
-            border: 1px solid rgba(148, 163, 184, 0.5);
-            background-color: transparent;
-            color: #e5e7eb;
-            cursor: pointer;
-            transition: background-color 0.2s, color 0.2s, transform 0.1s, box-shadow 0.2s, border-color 0.2s;
-        }
-
-            .theme-toggle-btn:hover {
-                background-color: rgba(148, 163, 184, 0.25);
-                border-color: rgba(148, 163, 184, 0.9);
-                box-shadow: 0 4px 12px rgba(15, 23, 42, 0.4);
-            }
-
-            .theme-toggle-btn:active {
-                transform: translateY(1px);
-                box-shadow: none;
-            }
-
-        .theme-toggle-icon {
-            font-size: 1.1rem;
-        }
-    </style>
 
     @await RenderSectionAsync("Styles", required: false)
 
-    <!-- Инициализация темы и версии для слабовидящих до отрисовки -->
     <script>
         (function () {
             try {
@@ -344,184 +36,161 @@
     </script>
 </head>
 <body>
-    <!-- Навигация -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-enterprise">
-        <div class="container-fluid px-lg-5">
-            <!-- Увеличил боковые отступы контейнера -->
-            <!-- Логотип -->
-            <a class="navbar-brand d-flex align-items-center gap-3" asp-area="" asp-controller="Home" asp-action="Index">
-                <!-- Увеличил gap -->
-                <i class="bi bi-geo-alt-fill text-primary fs-4"></i> <!-- Увеличил иконку -->
-                <div class="d-flex flex-column">
-                    <span>ГеоКаталог</span>
-                    <span class="brand-subtitle">Республика Беларусь</span>
-                </div>
-            </a>
+    <a href="#main-content" class="gc-skip-link">Перейти к содержимому</a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon" style="width: 1em; height: 1em;"></span>
-            </button>
-
-            <div class="collapse navbar-collapse flex" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-5">
-                    <!-- Увеличил отступ слева для меню -->
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")"
-                           asp-area="" asp-controller="Home" asp-action="Index">
-                            Главная
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Catalog" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" && Context.Request.Query["ObjectType"].Count == 0 ? "active" : "")"
-                           asp-area="" asp-controller="Catalog" asp-action="Index">
-                            Поиск
-                        </a>
-                    </li>
-
-                    <!-- Dropdown Каталог -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Реестры
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item" asp-controller="Catalog" asp-action="Index" asp-route-ObjectType="ATE">
-                                    <i class="bi bi-geo"></i> Населенные пункты
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" asp-controller="Catalog" asp-action="Index" asp-route-ObjectType="AIR">
-                                    <i class="bi bi-airplane"></i> Аэропорты
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" asp-controller="Catalog" asp-action="Index" asp-route-ObjectType="RW">
-                                    <i class="bi bi-train-front"></i> Ж/Д объекты
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" asp-controller="Catalog" asp-action="Index" asp-route-ObjectType="FGO">
-                                    <i class="bi bi-water"></i> Физ.-геогр. объекты
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "About" ? "active" : "")"
-                           asp-area="" asp-controller="Home" asp-action="About">
-                            О проекте
-                        </a>
-                    </li>
-                    @if (User.Identity?.IsAuthenticated == true)
-                    {
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" ? "active" : "")"
-                           asp-area="" asp-controller="Admin" asp-action="Index">
-                            <i class="bi bi-gear me-1"></i> Админ
-                        </a>
-                    </li>
-                    }
-                </ul>
-
-                <!-- Поиск -->
-                <form class="d-flex align-items-center me-3" asp-controller="Catalog" asp-action="Index" method="get">
-                    <div class="search-group">
-                        <i class="bi bi-search search-icon-overlay"></i>
-                        <input type="text" class="nav-search-input" name="SearchQuery" placeholder="Поиск по каталогу..." aria-label="Поиск по каталогу">
-                    </div>
-                </form>
-
-                <!-- Версия для слабовидящих -->
-                <button id="a11yToggleBtn" class="a11y-toggle-btn" type="button" aria-label="Версия для слабовидящих" title="Версия для слабовидящих">
-                    <i class="bi bi-eyeglasses me-1"></i><span class="d-none d-md-inline">Слабовидящим</span>
-                </button>
-                <!-- Переключатель темы -->
-                <button id="themeToggleBtn" class="theme-toggle-btn" type="button" aria-label="Переключить тему">
-                    <i id="themeToggleIcon" class="bi bi-moon-fill theme-toggle-icon"></i>
-                </button>
+    <div class="gc-topbar d-none d-md-block">
+        <div class="gc-topbar-inner">
+            <div class="gc-topbar-contacts">
+                <a href="tel:+375173347949"><i class="bi bi-telephone"></i>+375 17 334 79 49</a>
+                <a href="mailto:info@belgeodesy.by"><i class="bi bi-envelope"></i>info@belgeodesy.by</a>
             </div>
+            <span class="gc-topbar-org">ГП «Белгеодезия» · Государственный каталог географических объектов</span>
         </div>
-    </nav>
+    </div>
 
-    <!-- Отступ для контента (увеличен из-за более высокого навбара) -->
-    <div style="height: 80px;"></div>
+    <header class="gc-header">
+        <nav class="navbar navbar-expand-lg gc-navbar">
+            <div class="container-fluid px-lg-4">
+                <a class="gc-brand navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="gc-brand-icon"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i></span>
+                    <span class="gc-brand-text">
+                        <span class="gc-brand-title">ГеоКаталог</span>
+                        <span class="gc-brand-subtitle">Республика Беларусь</span>
+                    </span>
+                </a>
 
-    <!-- Основной контент -->
-    <main role="main" class="container-fluid p-4">
-        <!-- Уведомления -->
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert alert-enterprise alert-enterprise-danger alert-dismissible fade show" role="alert">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-exclamation-circle-fill me-2 fs-5"></i>
-                    <div><strong>Ошибка:</strong> @TempData["ErrorMessage"]</div>
+                <button class="navbar-toggler gc-navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Меню">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav gc-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")"
+                               asp-area="" asp-controller="Home" asp-action="Index">Главная</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Catalog" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" && Context.Request.Query["ObjectType"].Count == 0 ? "active" : "")"
+                               asp-area="" asp-controller="Catalog" asp-action="Index">Поиск</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Реестры</a>
+                            <ul class="dropdown-menu gc-dropdown">
+                                <li><a class="dropdown-item" asp-controller="Catalog" asp-action="Index" asp-route-ObjectType="ATE"><i class="bi bi-geo"></i>Населённые пункты</a></li>
+                                <li><a class="dropdown-item" asp-controller="Catalog" asp-action="Index" asp-route-ObjectType="AIR"><i class="bi bi-airplane"></i>Аэропорты</a></li>
+                                <li><a class="dropdown-item" asp-controller="Catalog" asp-action="Index" asp-route-ObjectType="RW"><i class="bi bi-train-front"></i>Ж/Д объекты</a></li>
+                                <li><a class="dropdown-item" asp-controller="Catalog" asp-action="Index" asp-route-ObjectType="FGO"><i class="bi bi-water"></i>Физ.-геогр. объекты</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "About" ? "active" : "")"
+                               asp-area="" asp-controller="Home" asp-action="About">О проекте</a>
+                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" ? "active" : "")"
+                                   asp-area="" asp-controller="Admin" asp-action="Index">
+                                    <i class="bi bi-gear" aria-hidden="true"></i> Админ
+                                </a>
+                            </li>
+                        }
+                    </ul>
+
+                    <form class="d-flex align-items-center me-lg-2 mb-2 mb-lg-0" asp-controller="Catalog" asp-action="Index" method="get">
+                        <div class="gc-search-group">
+                            <i class="bi bi-search gc-search-icon" aria-hidden="true"></i>
+                            <input type="text" class="gc-search-input" name="SearchQuery" placeholder="Поиск по каталогу…" aria-label="Поиск по каталогу">
+                        </div>
+                    </form>
+
+                    <div class="gc-toolbar">
+                        <button id="a11yToggleBtn" class="a11y-toggle-btn" type="button" aria-label="Версия для слабовидящих" title="Версия для слабовидящих">
+                            <i class="bi bi-eyeglasses" aria-hidden="true"></i><span class="d-none d-xl-inline ms-1">Слабовидящим</span>
+                        </button>
+                        <button id="themeToggleBtn" class="theme-toggle-btn" type="button" aria-label="Переключить тему">
+                            <i id="themeToggleIcon" class="bi bi-moon-fill" aria-hidden="true"></i>
+                        </button>
+                    </div>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-        }
+        </nav>
+    </header>
 
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div class="alert alert-enterprise alert-enterprise-success alert-dismissible fade show" role="alert">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-check-circle-fill me-2 fs-5"></i>
-                    <div>@TempData["SuccessMessage"]</div>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="gc-alert-wrap">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-enterprise alert-enterprise-danger alert-dismissible fade show mt-3" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-circle-fill me-2 fs-5" aria-hidden="true"></i>
+                <div><strong>Ошибка:</strong> @TempData["ErrorMessage"]</div>
             </div>
-        }
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+        </div>
+    }
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-enterprise alert-enterprise-success alert-dismissible fade show mt-3" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill me-2 fs-5" aria-hidden="true"></i>
+                <div>@TempData["SuccessMessage"]</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+        </div>
+    }
+    </div>
+
+    <main id="main-content" role="main" class="gc-main">
         @RenderBody()
     </main>
 
-    <!-- Подвал -->
-    <footer class="footer-enterprise">
-        <div class="container pb-5">
+    <footer class="gc-footer">
+        <div class="container gc-footer-main">
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6">
-                    <div class="footer-heading">
-                        <i class="bi bi-geo-alt-fill text-primary me-2"></i>ГеоКаталог
+                    <div class="gc-footer-brand">
+                        <span class="gc-brand-icon"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i></span>
+                        <div>
+                            <div class="gc-footer-heading mb-0">ГеоКаталог</div>
+                            <small class="opacity-75">Республика Беларусь</small>
+                        </div>
                     </div>
-                    <p class="opacity-75 small mb-3" style="line-height: 1.6;">
-                        Государственный информационный ресурс для учета и стандартизации наименований географических объектов Республики Беларусь.
+                    <p class="small opacity-75 mb-3" style="line-height: 1.65;">
+                        Государственный информационный ресурс учёта и стандартизации наименований географических объектов Республики Беларусь.
                     </p>
-                    <div class="small text-muted">Версия 1.0.0</div>
+                    <div class="small opacity-50">Версия 1.0.0</div>
                 </div>
-
                 <div class="col-lg-2 col-md-6">
-                    <div class="footer-heading">Разделы</div>
-                    <a href="@Url.Action("Index", "Home")" class="footer-link">Главная</a>
-                    <a href="@Url.Action("Index", "Catalog")" class="footer-link">Каталог</a>
-                    <a href="@Url.Action("About", "Home")" class="footer-link">О проекте</a>
-                    <button type="button" id="a11yToggleBtnFooter" class="footer-link border-0 bg-transparent p-0 text-start w-100" style="cursor: pointer;">Версия для слабовидящих</button>
+                    <div class="gc-footer-heading">Разделы</div>
+                    <a href="@Url.Action("Index", "Home")" class="gc-footer-link">Главная</a>
+                    <a href="@Url.Action("Index", "Catalog")" class="gc-footer-link">Каталог</a>
+                    <a href="@Url.Action("About", "Home")" class="gc-footer-link">О проекте</a>
+                    <button type="button" id="a11yToggleBtnFooter" class="gc-footer-link border-0 bg-transparent p-0 text-start">Версия для слабовидящих</button>
                 </div>
-
                 <div class="col-lg-3 col-md-6">
-                    <div class="footer-heading">Контакты</div>
-                    <ul class="list-unstyled small opacity-75">
+                    <div class="gc-footer-heading">Контакты</div>
+                    <ul class="list-unstyled small opacity-75 mb-0">
                         <li class="mb-2">ГП «Белгеодезия»</li>
-                        <li class="mb-2"><i class="bi bi-telephone me-2"></i>+375 (17) 292-XX-XX</li>
-                        <li class="mb-2"><i class="bi bi-envelope me-2"></i>info@belgeodesy.by</li>
-                        <li><i class="bi bi-geo-alt me-2"></i>г. Минск, ул. Красная, 12</li>
+                        <li class="mb-2"><i class="bi bi-geo-alt me-2"></i>220029, г. Минск, пр-т Машерова, 17</li>
+                        <li class="mb-2"><a href="tel:+375173347949" class="gc-footer-link d-inline mb-0"><i class="bi bi-telephone me-2"></i>+375 17 334 79 49</a></li>
+                        <li><a href="mailto:info@belgeodesy.by" class="gc-footer-link d-inline mb-0"><i class="bi bi-envelope me-2"></i>info@belgeodesy.by</a></li>
                     </ul>
                 </div>
-
                 <div class="col-lg-3 col-md-6">
-                    <div class="footer-heading">Внешние ресурсы</div>
-                    <a href="https://geo.by" class="footer-link" target="_blank">Белгеодезия <i class="bi bi-box-arrow-up-right small ms-1"></i></a>
-                    <a href="http://maps.by" class="footer-link" target="_blank">Карты Беларуси <i class="bi bi-box-arrow-up-right small ms-1"></i></a>
+                    <div class="gc-footer-heading">Внешние ресурсы</div>
+                    <a href="https://geo.by" class="gc-footer-link" target="_blank" rel="noopener">Белгеодезия <i class="bi bi-box-arrow-up-right small ms-1"></i></a>
+                    <a href="http://maps.by" class="gc-footer-link" target="_blank" rel="noopener">Карты Беларуси <i class="bi bi-box-arrow-up-right small ms-1"></i></a>
                 </div>
             </div>
         </div>
-        <div class="py-3" style="background-color: rgba(0,0,0,0.2);">
-            <div class="container text-center small opacity-50">
-                &copy; @DateTime.Now.Year ГеоКаталог Республики Беларусь. Все права защищены.
+        <div class="gc-footer-bottom">
+            <div class="container">
+                &copy; @DateTime.Now.Year Государственное предприятие «Белгеодезия». Все права защищены.
             </div>
         </div>
     </footer>
 
-    <!-- Скрипты -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

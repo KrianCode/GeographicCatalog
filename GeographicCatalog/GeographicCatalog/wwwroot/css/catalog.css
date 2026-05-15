@@ -2,7 +2,7 @@
 
 /* Заголовок страницы */
 .page-header {
-    background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+    background: linear-gradient(135deg, #3d6d9e 0%, #5b8ec4 50%, #8eb5de 100%);
     color: white;
     padding: 2rem;
     border-radius: 10px;
@@ -21,7 +21,7 @@
 
 /* Панель поиска */
 .search-panel {
-    border: 2px solid #0d6efd;
+    border: 2px solid #5b8ec4;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(13, 110, 253, 0.1);
 }
@@ -79,7 +79,7 @@
     .stat-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        border-color: #0d6efd;
+        border-color: #5b8ec4;
     }
 
     .stat-card h3 {
@@ -89,7 +89,7 @@
 
 /* Таблица результатов */
 .table th {
-    background-color: #0d6efd;
+    background-color: #5b8ec4;
     color: white;
     border: none;
 }
@@ -122,7 +122,7 @@
 
 /* Пагинация */
 .pagination .page-item.active .page-link {
-    background-color: #0d6efd;
+    background-color: #5b8ec4;
     border-color: #0d6efd;
 }
 
